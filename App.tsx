@@ -1,20 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import TabsNavigator from './src/navigation/tabs/TabsNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    /*Atravez del Gesture permite realizar scroll en DaySelector */
+    <GestureHandlerRootView style={styles.container}>
+    {/*Contenedor principal, envuelve a toda la aplicación*/}
+      <NavigationContainer>
+        {/*Componente que contiene la navegación principal (tabs) */}
+        <TabsNavigator />
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
