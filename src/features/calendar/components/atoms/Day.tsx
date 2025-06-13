@@ -1,0 +1,70 @@
+import { TouchableOpacity, View , Text, StyleSheet} from "react-native";
+
+/*Se crea la interfaz para el componente Day */
+interface Props {
+    day: number;
+    dateString: string;
+    isSelected: boolean;
+    isToday: boolean;
+    isDisabled: boolean;
+    onPress: () => void;
+}
+
+/*Componente que representa un día individual del calendario */
+export default function Day({ day, dateString,isSelected,isToday, isDisabled, onPress,}: Props) 
+{
+    return (
+        <TouchableOpacity onPress={onPress}>
+            <View
+            /*Estilo base de las celdas */
+                style={[
+                    styles.dayContainer,
+                    isSelected && styles.selectedDayContainer,
+                    isToday && styles.todayContainer,
+                ]}>
+                {/*Fecha del día */}
+                <Text
+                    style={[
+                        styles.dayText,
+                        isDisabled && { color: '#C1C4C2' },
+                        isSelected && styles.selectedDayText,
+                        isToday && styles.todayText,
+                    ]}> {day}
+                </Text>
+            </View>
+        </TouchableOpacity>
+    );
+}
+
+// Estilos conforme se encuentre la celda
+const styles = StyleSheet.create({
+  dayContainer: {
+    width: 48,
+    height: 92,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 4,
+    borderRadius: 8,
+  },
+  dayText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  selectedDayContainer: {
+    backgroundColor: '#93BFCF',
+    borderRadius: 8,
+  },
+  selectedDayText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  todayContainer: {
+    borderWidth: 2,
+    borderColor: '#6096B4',
+    borderRadius: 8,
+  },
+  todayText: {
+    color: '#6096B4',
+    fontWeight: 'bold',
+  },
+});
