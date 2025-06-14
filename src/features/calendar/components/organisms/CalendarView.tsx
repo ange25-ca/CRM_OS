@@ -5,10 +5,12 @@ import Day from "../atoms/Day";
 interface Props {
     selectedDate: string | null;
     onSelectDate: (dateString: string) => void;
+    /*Se agrega los eventos, esta puede ser opcional */
+    eventDates?: string[];
 }
 
 /*Se crea la función con el renderizado con el calendario */
-export default function CalendarView({ selectedDate, onSelectDate }: Props) {
+export default function CalendarView({ selectedDate, onSelectDate, eventDates=[]}: Props) {
     return (
         /*Calendario Mensual */
         <Calendar
@@ -23,6 +25,8 @@ export default function CalendarView({ selectedDate, onSelectDate }: Props) {
                 const isSelected = date.dateString === selectedDate;
                 /*Permite saber que días son fuera del mes que este seleccionado */
                 const isDisabled = state === "disabled";
+                /*Se verifica si hay un evento */
+                const hasEvents = eventDates.includes(date.dateString);
                 /*Retorna todos los valores analizados */
                 return (
                     <Day
@@ -33,6 +37,8 @@ export default function CalendarView({ selectedDate, onSelectDate }: Props) {
                         isDisabled={isDisabled}
                         /*Permite actualizar la fecha seleccionada */
                         onPress={() => onSelectDate(date.dateString)}
+                        /*Eventos del día */
+                        hasEvents={hasEvents}
                     />
                 );
             }}

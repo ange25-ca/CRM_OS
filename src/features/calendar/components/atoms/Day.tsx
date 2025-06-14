@@ -8,10 +8,12 @@ interface Props {
     isToday: boolean;
     isDisabled: boolean;
     onPress: () => void;
+    /*Recibe eventos */
+    hasEvents?:boolean;
 }
 
 /*Componente que representa un día individual del calendario */
-export default function Day({ day, dateString,isSelected,isToday, isDisabled, onPress,}: Props) 
+export default function Day({ day, dateString,isSelected,isToday, isDisabled, onPress, hasEvents= false}: Props) 
 {
     return (
         <TouchableOpacity onPress={onPress}>
@@ -30,6 +32,10 @@ export default function Day({ day, dateString,isSelected,isToday, isDisabled, on
                         isSelected && styles.selectedDayText,
                         isToday && styles.todayText,
                     ]}> {day}
+                    <Text>
+                      {/*Punto visual */}
+                      {hasEvents && <View style={styles.eventDot}></View>}
+                    </Text>
                 </Text>
             </View>
         </TouchableOpacity>
@@ -67,4 +73,12 @@ const styles = StyleSheet.create({
     color: '#6096B4',
     fontWeight: 'bold',
   },
+  eventDot: {
+    width: 6,
+    height:6,
+    borderRadius: 3,
+    backgroundColor: "#609",
+    marginTop: 4
+
+  }
 });
