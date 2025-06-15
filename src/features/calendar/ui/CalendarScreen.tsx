@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Alert } from "react-native";
+import { View,StyleSheet} from "react-native";
 import CalendarView from "../components/organisms/CalendarView";
 import { getEventsForDay } from "../data/calendarService";
-import { addEventForDate } from "../domain/calendarUseCases";
-import { usePermissionsStore } from "../../../stores/permissionsStore";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CalendarStackParamList } from "../../../navigation/stacks/types/types";
 
 export default function CalendarScreen() {
+  /*Permite la navegación en stack */
+  const navigation = useNavigation<NativeStackNavigationProp<CalendarStackParamList>>();
+
+  const handleDayPress = (dateString: string) => {
+    /*Permite Cargar los eventos */
+    setSelectedDate(dateString); 
+    /*Navega por el día */
+    navigation.navigate('AddEventScreen', { date: dateString }); 
+  };
 
   /*Constantes que permiten manejar la fecha seleccionada*/
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -34,7 +44,7 @@ export default function CalendarScreen() {
       {/* Se integra el organismo con la vista del calendario */}
       <CalendarView
         selectedDate={selectedDate}
-        onSelectDate={setSelectedDate}
+        onSelectDate={handleDayPress}
         /*Se agrega el evento */
         eventDates={eventDates}
       />

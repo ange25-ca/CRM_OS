@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../../features/home/screens/HomeScreen";
-import CalendarScreen from "../../features/calendar/screens/CalendarScreen";
+import CalendarScreen from "../../features/calendar/ui/CalendarScreen";
+import StackNavigator from "../stacks/StackNavigator";
 
 
 const Tabs = createBottomTabNavigator();
@@ -16,9 +17,10 @@ export default function TabsNavigator(){
                 component={HomeScreen}
                 options={{headerShown: false}}
             />
-            <Tabs.Screen
-                name="Moth Calendar"
-                component={CalendarScreen}
+            <Tabs.Screen 
+                name="CalendarTab"
+                component={StackNavigator}
+                options={{title:'Calendario'}}
             />
         </Tabs.Navigator>
     )
