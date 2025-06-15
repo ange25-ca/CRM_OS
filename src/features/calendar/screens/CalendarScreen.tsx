@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Button, Alert } from "react-native";
 import CalendarView from "../components/organisms/CalendarView";
 import { getEventsForDay } from "../data/calendarService";
+import { addEventForDate } from "../domain/calendarUseCases";
+import { usePermissionsStore } from "../../../stores/permissionsStore";
 
 export default function CalendarScreen() {
 
@@ -10,7 +12,7 @@ export default function CalendarScreen() {
 
   /*Eventos reales del calendario nativo */
   const [events, setEvents] = useState<any[]>([]);
-  const [eventDates, setEventDates] =  useState<string[]>([]);
+  const [eventDates, setEventDates] = useState<string[]>([]);
 
   /*Se carga los eventos al cambiar la fecha seleccionada */
   useEffect(() => {
@@ -20,9 +22,9 @@ export default function CalendarScreen() {
       setEvents(eventsForDay);
 
       /*Se añade la fecha si tiene eventos */
-      if (eventsForDay.length> 0){
-        setEventDates((prev) => 
-        prev.includes(selectedDate) ? prev : [...prev, selectedDate]);
+      if (eventsForDay.length > 0) {
+        setEventDates((prev) =>
+          prev.includes(selectedDate) ? prev : [...prev, selectedDate]);
       }
     })();
   }, [selectedDate]);
@@ -36,18 +38,6 @@ export default function CalendarScreen() {
         /*Se agrega el evento */
         eventDates={eventDates}
       />
-      {/* Muestra la fecha debajo del calendario */}
-      {selectedDate && (
-        <View>
-          <Text style={styles.dateInfo}>Fecha seleccionada: {selectedDate}</Text>
-          {events.length > 0 ? (
-            <Text style={styles.eventInfo}>Eventos encontrados: {events.length}</Text>
-
-          ) : (
-            <Text style={styles.eventInfo}>No hay eventos</Text>
-          )}
-        </View>
-      )}
     </View>
   )
 }
@@ -57,15 +47,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-  },
-  dateInfo: {
-    fontSize: 16,
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  eventInfo: {
-    fontSize: 14,
-    textAlign: "center",
-    color: "#777",
-  },
+  }
 });

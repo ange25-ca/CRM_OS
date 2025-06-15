@@ -1,3 +1,4 @@
+import React from "react";
 import { TouchableOpacity, View , Text, StyleSheet} from "react-native";
 
 /*Se crea la interfaz para el componente Day */
@@ -13,7 +14,14 @@ interface Props {
 }
 
 /*Componente que representa un día individual del calendario */
-export default function Day({ day, dateString,isSelected,isToday, isDisabled, onPress, hasEvents= false}: Props) 
+const Day = ({ 
+  day, 
+  dateString,
+  isSelected,
+  isToday, 
+  isDisabled, 
+  onPress, 
+  hasEvents= false}: Props) =>
 {
     return (
         <TouchableOpacity onPress={onPress}>
@@ -41,6 +49,9 @@ export default function Day({ day, dateString,isSelected,isToday, isDisabled, on
         </TouchableOpacity>
     );
 }
+
+/*Permite que no se re-renderice las props si no cambian */
+export default React.memo(Day);
 
 // Estilos conforme se encuentre la celda
 const styles = StyleSheet.create({
