@@ -14,7 +14,7 @@ export default function CalendarScreen() {
     /*Permite Cargar los eventos */
     setSelectedDate(dateString); 
     /*Navega por el día */
-    navigation.navigate('AddEventScreen', { date: dateString }); 
+    navigation.navigate('DayViewScreen', { date: dateString }); 
   };
 
   /*Constantes que permiten manejar la fecha seleccionada*/
