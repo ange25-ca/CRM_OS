@@ -2,11 +2,10 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { CalendarStackParamList } from "../../../navigation/stacks/types/types";
 
-
-export default function DayViewScreen() {
-
   /*Se define el tipo especifico de la ruta */
   type DayViewRouteProp = RouteProp<CalendarStackParamList, 'DayViewScreen'>;
+
+export default function DayViewScreen() {
 
   /*Recibe la fecha como parámetro */
   const route = useRoute<DayViewRouteProp>();

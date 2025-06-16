@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CalendarScreen from '../../features/calendar/ui/CalendarScreen';
 import AddEventScreen from '../../features/calendar/ui/AddEventScreen';
-import DayViewScreen from '../../features/calendar/ui/DayViewScreen';
 
 import { CalendarStackParamList } from './types/types';
 
@@ -17,14 +16,6 @@ export default function StackNavigator(){
                 options={{
                     title: "Calendar",
                     headerShown: false,
-                }}
-            />
-            <Stack.Screen 
-                name="DayViewScreen"
-                component={DayViewScreen}
-                options={{
-                    headerShown: false,
-                    title: " Day View"
                 }}
             />
             <Stack.Screen 
