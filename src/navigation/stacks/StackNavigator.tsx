@@ -1,8 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CalendarScreen from '../../features/calendar/ui/CalendarScreen';
-import AddEventScreen from '../../features/calendar/ui/AddEventScreen';
-
 import { CalendarStackParamList } from './types/types';
+import DayViewScreen from '../../features/calendar/ui/DayViewScreen';
 
 /*Se crea la stack con los types del calendario */
 const Stack = createNativeStackNavigator<CalendarStackParamList>();
@@ -19,12 +18,11 @@ export default function StackNavigator(){
                 }}
             />
             <Stack.Screen 
-                name="AddEventScreen"
-                component={AddEventScreen}
+                name="DayViewScreen"
+                component={DayViewScreen}
                 options={{
                     headerShown: false,
-                    title: "Add Event"
-                }}
+                    title:"Day View"}}
             />
         </Stack.Navigator>
     )
