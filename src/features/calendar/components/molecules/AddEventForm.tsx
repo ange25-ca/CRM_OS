@@ -8,10 +8,11 @@ interface Props{
     date: string;
     /*Cierra el modal */
     onSuccess: () => void;
+    hour?: number | null;
 }
 
 /*Se crea la función para el modal add event*/
-export default function AddEventForm({ date, onSuccess}: Props){
+export default function AddEventForm({ date, onSuccess, hour}: Props){
     /*Tendra */
     const [title, setTitle] = useState('');
     const [notes, setNotes] = useState('');
@@ -23,7 +24,7 @@ export default function AddEventForm({ date, onSuccess}: Props){
         }
 
         try{
-            await createEventForDate(date, title, notes);
+            await createEventForDate(date, title, notes, hour ?? undefined);
             Alert.alert('Evento agregado');
             onSuccess();
         }catch (err) {
@@ -42,7 +43,7 @@ export default function AddEventForm({ date, onSuccess}: Props){
                 style={styles.input}
             />
             <TextInput 
-                value="notes"
+                value={notes}
                 onChangeText={setNotes}
                 placeholder="Agregar detalles..."
                 multiline 

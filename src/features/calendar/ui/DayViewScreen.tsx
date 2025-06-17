@@ -19,6 +19,7 @@ export default function DayViewScreen() {
 
   const [events, setEvents] = useState<Calendar.Event[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedHour, setSelectedHour] = useState<number | null>(null);
 
   /*Lista de las horas del día */
   const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
@@ -49,6 +50,12 @@ export default function DayViewScreen() {
             new Date(event.startDate).getHours() === hour
           );
           return (
+            <TouchableOpacity 
+              onPress={() => {
+                setSelectedHour(hour);
+                setModalVisible(true);
+              }}
+            >
             <View style={styles.hourBlock}>
               <Text style={styles.hourText}>
                 {hour.toString().padStart(2, "0")}:00
@@ -59,17 +66,20 @@ export default function DayViewScreen() {
                 </View>
               )}
             </View>
+          </TouchableOpacity>
           );
         }}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
 
       {/* Botton de agregar */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={openModal} >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      {events.length > 0 && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={openModal} >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
 
       {/*Modal */}
       <ReactNativeModal
@@ -83,6 +93,7 @@ export default function DayViewScreen() {
         <View style={styles.modalContent}>
           <AddEventForm
             date={date}
+            hour={selectedHour}
             onSuccess={() => {
               closeModal();
               loadEvents();

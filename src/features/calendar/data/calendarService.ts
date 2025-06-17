@@ -31,7 +31,8 @@ export async function getEventsForDay(dateString: string): Promise<Calendar.Even
 export async function createEventForDate(
   dateString: string,
   title: string,
-  notes?: string
+  notes?: string,
+  hour?: number
 ) {
 
   /*Se obtiene los calendarios disponibles*/
@@ -76,7 +77,7 @@ export async function createEventForDate(
 
   // Creamos fecha de inicio a las 10:00 AM y fin a las 11:00 AM
   const start = new Date(dateString);
-  start.setHours(10, 0);
+  start.setHours(hour?? 10, 0);
   const end = new Date(start.getTime() + 60 * 60 * 1000); 
 
   // Creamos el evento con zona horaria local
