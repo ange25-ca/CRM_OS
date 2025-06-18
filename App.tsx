@@ -1,10 +1,18 @@
-import { NavigationContainer } from '@react-navigation/native';
-import TabsNavigator from './src/navigation/tabs/TabsNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import AppNavigator from './src/navigation';
+import { initDB } from './src/features/calendar/data/calendarDb';
+import { useEffect } from 'react';
+
 
 export default function App() {
+  /*Se inicializa la bd */
+  useEffect(()=> {
+    initDB().catch(err => 
+      console.error ('Error inicializando SQLite:', err)
+    );
+  }, []);
+
   return (
     /*Atravez del Gesture permite realizar scroll en DaySelector */
     <GestureHandlerRootView style={styles.container}>

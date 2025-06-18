@@ -1,11 +1,11 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useFocusEffect, useIsFocused, useRoute } from "@react-navigation/native";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, } from "react-native";
 import { CalendarStackParamList } from "../../../navigation/stacks/types/types";
-import { useEffect, useMemo, useRef, useState } from "react";
-import * as Calendar from "expo-calendar"
-import { getEventsForDay } from "../data/calendarService";
+import {  useEffect, useState } from "react";
 import AddEventForm from "../components/molecules/AddEventForm";
 import ReactNativeModal from "react-native-modal";
+import { useCalendarStore } from "../store/calendarStore";
+import React from "react";
 
 
 /*Se define el tipo especifico de la ruta */
@@ -17,26 +17,34 @@ export default function DayViewScreen() {
   const route = useRoute<DayViewRouteProp>();
   const { date } = route.params;
 
-  const [events, setEvents] = useState<Calendar.Event[]>([]);
+  /*Se usa el store para los eventos */
+  const events = useCalendarStore(state => state.events);
+  const loadEvents = useCalendarStore(state => state.loadEvents);
+  const addEvent = useCalendarStore(state => state.addEvent);
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedHour, setSelectedHour] = useState<number | null>(null);
+  const [selectedHour, setSelectedHour] = useState<number | undefined>(undefined);
+  const isFocused = useIsFocused();
 
   /*Lista de las horas del día */
   const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
 
-  /*Se crea el evento para la fecha seleccionada */
-  const loadEvents = async () => {
-    const loadEvents = await getEventsForDay(date);
-    setEvents(loadEvents);
-  };
-
+  /*Permite re-rendizar la lista si cambia la fecha */
   useEffect(() => {
-    loadEvents();
-  }, [date]);
+    if (isFocused) {
+      console.log('recargando eventos para', date);
+      loadEvents(date);
+    }
+  }, [isFocused, date]);
 
   /*Operaciones con el modal */
-  const openModal = () => setModalVisible(true);
-  const closeModal = () => setModalVisible(false);
+  const openModal = (hour?: number) => {
+    setSelectedHour(hour);
+    setModalVisible(true);
+  };
+  const closeModal = () => {
+    setSelectedHour(undefined);
+    setModalVisible(false)};
 
   return (
     <View style={styles.container}>
@@ -44,28 +52,26 @@ export default function DayViewScreen() {
       {/*Lista que muestra la hora por día */}
       <FlatList
         data={hours}
+        /*Adicional para no tener eventos que no son de esa fecha */
+        extraData={events}
         keyExtractor={(hour) => hour.toString()}
         renderItem={({ item: hour }) => {
-          const matchingEvent = events.find(event =>
-            new Date(event.startDate).getHours() === hour
+          const matchingEvent = events.filter(event => 
+            event.hour === hour
           );
           return (
             <TouchableOpacity 
-              onPress={() => {
-                setSelectedHour(hour);
-                setModalVisible(true);
-              }}
+              onPress={() => openModal(hour)}
+                style={styles.hourBlock}
             >
-            <View style={styles.hourBlock}>
               <Text style={styles.hourText}>
                 {hour.toString().padStart(2, "0")}:00
               </Text>
-              {matchingEvent && (
-                <View style={styles.eventBox}>
-                  <Text style={styles.eventTitle}>{matchingEvent.title}</Text>
+              {matchingEvent.map(events => (
+                <View key={events.id} style={styles.eventBox}>
+                 <Text style={styles.eventTitle}>{events.title}</Text> 
                 </View>
-              )}
-            </View>
+              ))}
           </TouchableOpacity>
           );
         }}
@@ -73,14 +79,14 @@ export default function DayViewScreen() {
       />
 
       {/* Botton de agregar */}
-      {events.length > 0 && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={openModal} >
+          onPress={() => openModal(
+            new Date().getHours()
+          )} >
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
-      )}
-
+    
       {/*Modal */}
       <ReactNativeModal
         isVisible={modalVisible}
@@ -96,7 +102,7 @@ export default function DayViewScreen() {
             hour={selectedHour}
             onSuccess={() => {
               closeModal();
-              loadEvents();
+              loadEvents(date);
             }}
           />
         </View>
