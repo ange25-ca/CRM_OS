@@ -1,4 +1,4 @@
-import { RouteProp, useFocusEffect, useIsFocused, useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, } from "react-native";
 import { CalendarStackParamList } from "../../../navigation/stacks/types/types";
 import {  useEffect, useState } from "react";
@@ -24,18 +24,19 @@ export default function DayViewScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHour, setSelectedHour] = useState<number | undefined>(undefined);
-  const isFocused = useIsFocused();
 
   /*Lista de las horas del día */
   const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
+  const hourItems = hours.map(hour => ({
+    hour,
+    events: events.filter(e => e.hour === hour)
+  }));
 
-  /*Permite re-rendizar la lista si cambia la fecha */
+
+  /*Se cambia exclusivamente cuando cambia la fecha*/
   useEffect(() => {
-    if (isFocused) {
-      console.log('recargando eventos para', date);
-      loadEvents(date);
-    }
-  }, [isFocused, date]);
+   loadEvents(date);
+  }, [date]);
 
   /*Operaciones con el modal */
   const openModal = (hour?: number) => {
@@ -51,30 +52,23 @@ export default function DayViewScreen() {
       <Text style={styles.header}>Agenda para {date}</Text>
       {/*Lista que muestra la hora por día */}
       <FlatList
-        data={hours}
-        /*Adicional para no tener eventos que no son de esa fecha */
-        extraData={events}
-        keyExtractor={(hour) => hour.toString()}
-        renderItem={({ item: hour }) => {
-          const matchingEvent = events.filter(event => 
-            event.hour === hour
-          );
-          return (
+        data={hourItems}
+        keyExtractor={item => item.hour.toString()}
+        renderItem={({ item}) => (
             <TouchableOpacity 
-              onPress={() => openModal(hour)}
+              onPress={() => openModal(item.hour)}
                 style={styles.hourBlock}
             >
               <Text style={styles.hourText}>
-                {hour.toString().padStart(2, "0")}:00
+                {item.hour.toString().padStart(2, "0")}:00
               </Text>
-              {matchingEvent.map(events => (
+              {item.events.map(events => (
                 <View key={events.id} style={styles.eventBox}>
                  <Text style={styles.eventTitle}>{events.title}</Text> 
                 </View>
               ))}
           </TouchableOpacity>
-          );
-        }}
+        )}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
 

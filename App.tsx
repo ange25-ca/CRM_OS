@@ -8,9 +8,7 @@ import { useEffect } from 'react';
 export default function App() {
   /*Se inicializa la bd */
   useEffect(()=> {
-    initDB().catch(err => 
-      console.error ('Error inicializando SQLite:', err)
-    );
+    initDB();
   }, []);
 
   return (

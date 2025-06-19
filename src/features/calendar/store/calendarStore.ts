@@ -18,9 +18,12 @@ interface CalendarState{
 
 export const useCalendarStore = create<CalendarState>((set, get) => ({
     events: [],
-
+        
     /*Se carga los eventos de SQLite por la fecha */
     loadEvents: async (date: string)=> {
+        /*Limpia el array */
+        set({events: []});
+        /*Obtiene los nuevos datos */
         const local = await getLocalEventsByDate(date);
           console.log('Eventos locales para', date, local);
         set({events: local});
