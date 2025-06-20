@@ -8,6 +8,8 @@ import { useCalendarStore } from "../../store/calendarStore";
 import React from "react";
 import { HourCell } from "../organisms/HourCell";
 import { FabButton } from "../atoms/FabButton";
+import { EventType } from "../../data/calendarDb";
+import { EventItem } from "../molecules/EventItem";
 
 
 /*Se define el tipo especifico de la ruta */
@@ -25,6 +27,7 @@ export default function DayViewScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHour, setSelectedHour] = useState<number | undefined>(undefined);
+  const [editingEvent, setEditingEvent] = useState<EventType |null>(null);
 
   /*Lista de las horas del día */
   const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
@@ -40,13 +43,17 @@ export default function DayViewScreen() {
   }, [date]);
 
   /*Operaciones con el modal */
-  const openModal = (hour?: number) => {
+  const openModal = (hour?: number, eventToEdit?: EventType) => {
     setSelectedHour(hour);
+    setEditingEvent(eventToEdit ?? null);
     setModalVisible(true);
   };
   const closeModal = () => {
     setSelectedHour(undefined);
-    setModalVisible(false)};
+    setModalVisible(false);
+    setEditingEvent(null);
+  };
+
 
   return (
     <View style={styles.container}>
@@ -59,7 +66,16 @@ export default function DayViewScreen() {
           <HourCell 
             hour={item.hour}
             events={item.events}
-            onPress={openModal}
+            onPress={hour =>
+              openModal(hour)  
+            }
+            renderEvent={evt => (
+              <EventItem
+                key={evt.id}
+                event={evt}
+                onEdit={() => openModal(item.hour, evt)}
+              />
+            )}
           />
         )}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -85,6 +101,7 @@ export default function DayViewScreen() {
           <AddEventForm
             date={date}
             hour={selectedHour}
+            editingEvent={editingEvent!}
             onSuccess={() => {
               closeModal();
               loadEvents(date);

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, View, Text, TextInput, StyleSheet, Button } from "react-native";
 import { useCalendarStore } from "../../store/calendarStore";
 import { FormField } from "../molecules/FormField";
 import { DateDisplay } from "../molecules/DateDisplay";
 import { ButtonAtom } from "../atoms/Button";
+import { EventType } from "../../data/calendarDb";
 
 /*Los datos que recibe */
 interface Props {
@@ -14,13 +15,23 @@ interface Props {
 }
 
 /*Se crea la función para el modal add event*/
-export default function AddEventForm({ date, onSuccess, hour = 0 }: Props) {
+export default function AddEventForm({ date, onSuccess, hour = 0, editingEvent }: Props & { editingEvent?: EventType }) {
   /*Recibe */
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
 
   /*Usa el store que crea el evento */
   const addEvent = useCalendarStore(state => state.addEvent);
+  const updateEvent = useCalendarStore(state => state.updateEvent);
+
+  // Si editingEvent existe, inicializamos los campos con él
+  useEffect(() => {
+    if (editingEvent) {
+      setTitle(editingEvent.title);
+      setNotes(editingEvent.notes ?? '');
+    }
+  }, [editingEvent]);
+
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -28,15 +39,28 @@ export default function AddEventForm({ date, onSuccess, hour = 0 }: Props) {
       return;
     }
     try {
-      /*Se llama al store */
-      await addEvent(date, title, notes, hour ?? 0);
-      Alert.alert('Evento agregado');
+      if (editingEvent) {
+        /*Se actualiza */
+        await updateEvent({
+          id: editingEvent.id,
+          title,
+          notes,
+          date,
+          hour: hour ?? editingEvent.hour
+        });
+        Alert.alert('Evento actualizado');
+      } else {
+        /*Se crea */
+        await addEvent(date, title, notes, hour ?? 0);
+        Alert.alert('Evento agregado');
+      }
       onSuccess();
     } catch (err) {
-      console.error('Error al crear evento:', err);
-      Alert.alert('Error', 'No se pudo crear el evento');
+      console.error('Error al guardar evento:', err);
+      Alert.alert('Error', 'No se pudo guardar el evento');
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -59,9 +83,9 @@ export default function AddEventForm({ date, onSuccess, hour = 0 }: Props) {
       <DateDisplay date={date} />
 
       <ButtonAtom
-        title="Guardar evento"
+        title={editingEvent ? "Guardar evento" : 'Crear evento'}
         onPress={handleSave}
-        style={{marginTop: 12}}
+        style={{ marginTop: 12 }}
       />
     </View>
   )

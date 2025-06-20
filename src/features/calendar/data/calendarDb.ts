@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';   // paquete oficial
+import * as SQLite from 'expo-sqlite';   
 
 /*Se instancia única de la BD con la API WebSQL */
 const dbPromise = SQLite.openDatabaseSync('events.db');
@@ -57,4 +57,30 @@ export async function getLocalEventsByDate(date: string): Promise<EventType[]> {
     date
   );
   return rows;
+}
+
+/*Actualiza un evento */
+export async function updateEventLocally(
+  id:    string,
+  title: string,
+  notes: string,
+  date:  string,
+  hour:  number
+): Promise<void> {
+  const db = await dbPromise;
+  await db.runAsync(
+    `UPDATE events
+        SET title = ?, notes = ?, date = ?, hour = ?
+      WHERE id    = ?;`,
+    title, notes, date, hour, id
+  );
+}
+
+/* Borra un evento */
+export async function deleteEventLocally(id: string): Promise<void> {
+  const db = await dbPromise;
+  await db.runAsync(
+    `DELETE FROM events WHERE id = ?;`,
+    id
+  );
 }
