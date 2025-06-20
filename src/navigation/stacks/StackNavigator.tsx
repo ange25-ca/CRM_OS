@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import CalendarScreen from '../../features/calendar/ui/CalendarScreen';
+import CalendarScreen from '../../features/calendar/components/pages/CalendarScreen';
 import { CalendarStackParamList } from './types/types';
-import DayViewScreen from '../../features/calendar/ui/DayViewScreen';
+import DayViewScreen from '../../features/calendar/components/pages/DayViewScreen';
 
 /*Se crea la stack con los types del calendario */
 const Stack = createNativeStackNavigator<CalendarStackParamList>();

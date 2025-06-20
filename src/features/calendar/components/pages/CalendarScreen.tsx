@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { View,StyleSheet} from "react-native";
-import CalendarView from "../components/organisms/CalendarView";
-import { getEventsForDay } from "../data/calendarService";
+import CalendarView from "../organisms/CalendarView";
+import { getEventsForDay } from "../../data/calendarService";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CalendarStackParamList } from "../../../navigation/stacks/types/types";
+import { CalendarStackParamList } from "../../../../navigation/stacks/types/types";
 
 export default function CalendarScreen() {
   /*Permite la navegación en stack */

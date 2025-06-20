@@ -1,11 +1,13 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, } from "react-native";
-import { CalendarStackParamList } from "../../../navigation/stacks/types/types";
+import { View, Text, FlatList, StyleSheet,} from "react-native";
+import { CalendarStackParamList } from "../../../../navigation/stacks/types/types";
 import {  useEffect, useState } from "react";
-import AddEventForm from "../components/molecules/AddEventForm";
+import AddEventForm from "../organisms/AddEventForm";
 import ReactNativeModal from "react-native-modal";
-import { useCalendarStore } from "../store/calendarStore";
+import { useCalendarStore } from "../../store/calendarStore";
 import React from "react";
+import { HourCell } from "../organisms/HourCell";
+import { FabButton } from "../atoms/FabButton";
 
 
 /*Se define el tipo especifico de la ruta */
@@ -20,7 +22,6 @@ export default function DayViewScreen() {
   /*Se usa el store para los eventos */
   const events = useCalendarStore(state => state.events);
   const loadEvents = useCalendarStore(state => state.loadEvents);
-  const addEvent = useCalendarStore(state => state.addEvent);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHour, setSelectedHour] = useState<number | undefined>(undefined);
@@ -55,32 +56,22 @@ export default function DayViewScreen() {
         data={hourItems}
         keyExtractor={item => item.hour.toString()}
         renderItem={({ item}) => (
-            <TouchableOpacity 
-              onPress={() => openModal(item.hour)}
-                style={styles.hourBlock}
-            >
-              <Text style={styles.hourText}>
-                {item.hour.toString().padStart(2, "0")}:00
-              </Text>
-              {item.events.map(events => (
-                <View key={events.id} style={styles.eventBox}>
-                 <Text style={styles.eventTitle}>{events.title}</Text> 
-                </View>
-              ))}
-          </TouchableOpacity>
+          <HourCell 
+            hour={item.hour}
+            events={item.events}
+            onPress={openModal}
+          />
         )}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
 
       {/* Botton de agregar */}
-        <TouchableOpacity
-          style={styles.fab}
+        <FabButton 
           onPress={() => openModal(
             new Date().getHours()
-          )} >
-          <Text style={styles.fabText}>+</Text>
-        </TouchableOpacity>
-    
+          )}
+        />
+
       {/*Modal */}
       <ReactNativeModal
         isVisible={modalVisible}
@@ -118,43 +109,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: "center",
   },
-  hourBlock: {
-    height: 60,
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
-    justifyContent: "center",
-    paddingHorizontal: 8,
-  },
   hourText: {
     fontSize: 16,
     color: "#333",
-  },
-  eventBox: {
-    backgroundColor: "#93BFCF",
-    padding: 6,
-    borderRadius: 6,
-    marginTop: 4,
-  },
-  eventTitle: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  fab: {
-    position: "absolute",
-    bottom: 32,
-    right: 24,
-    backgroundColor: "#6096B4",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 4,
-  },
-  fabText: {
-    fontSize: 28,
-    color: "#fff",
-    fontWeight: "bold",
   },
   modal: {
     justifyContent: "flex-end",
