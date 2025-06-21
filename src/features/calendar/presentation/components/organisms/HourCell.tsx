@@ -1,5 +1,5 @@
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { EventType } from '../../data/calendarDb';
+import { EventType } from '../../../data/persistence/calendarDb';
 import { EventItem } from '../molecules/EventItem';
 import { HourLabel } from '../atoms/HourLabel';
 

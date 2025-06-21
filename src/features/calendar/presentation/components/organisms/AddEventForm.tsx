@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Alert, View, Text, TextInput, StyleSheet, Button } from "react-native";
-import { useCalendarStore } from "../../store/calendarStore";
+import { useCalendarStore } from "../../viewmodel/calendarStore";
 import { FormField } from "../molecules/FormField";
 import { DateDisplay } from "../molecules/DateDisplay";
 import { ButtonAtom } from "../atoms/Button";
-import { EventType } from "../../data/calendarDb";
+import { EventType } from "../../../data/persistence/calendarDb";
 
 /*Los datos que recibe */
 interface Props {

@@ -1,5 +1,5 @@
 
-import { createEventForDate } from "../data/calendarService";
+import { createEventForDate } from "../../data/service/calendarService";
 
 /*Se crea la funcion para agregar evento */
 export async function addEventForDate(

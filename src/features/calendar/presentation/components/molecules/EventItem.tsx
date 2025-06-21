@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useCalendarStore } from '../../store/calendarStore';
-import type { EventType } from '../../data/calendarDb';
+import { useCalendarStore } from '../../viewmodel/calendarStore';
+import type { EventType } from '../../../data/persistence/calendarDb';
 
 export function EventItem({
   event,

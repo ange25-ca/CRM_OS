@@ -1,14 +1,14 @@
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { View, Text, FlatList, StyleSheet,} from "react-native";
-import { CalendarStackParamList } from "../../../../navigation/stacks/types/types";
+import { CalendarStackParamList } from "../../../../../navigation/stacks/types/types";
 import {  useEffect, useState } from "react";
 import AddEventForm from "../organisms/AddEventForm";
 import ReactNativeModal from "react-native-modal";
-import { useCalendarStore } from "../../store/calendarStore";
+import { useCalendarStore } from "../../viewmodel/calendarStore";
 import React from "react";
 import { HourCell } from "../organisms/HourCell";
 import { FabButton } from "../atoms/FabButton";
-import { EventType } from "../../data/calendarDb";
+import { EventType } from "../../../data/persistence/calendarDb";
 import { EventItem } from "../molecules/EventItem";
 
 

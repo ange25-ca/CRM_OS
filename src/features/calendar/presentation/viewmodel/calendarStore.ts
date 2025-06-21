@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { deleteEventLocally, EventType, getLocalEventsByDate, saveEventLocally, updateEventLocally } from "../data/calendarDb";
-import { usePermissionsStore } from "../../../stores/permissionsStore";
-import { createEventForDate, deleteEventNative, updateEventNative } from "../data/calendarService";
+import { deleteEventLocally, EventType, getLocalEventsByDate, saveEventLocally, updateEventLocally } from "../../data/persistence/calendarDb";
+import { usePermissionsStore } from "../../../../stores/permissionsStore";
+import { createEventForDate, deleteEventNative, updateEventNative } from "../../data/service/calendarService";
 
 
 /*Se crea la interfaz de los eventos */

@@ -1,8 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import AppNavigator from './src/navigation';
-import { initDB } from './src/features/calendar/data/calendarDb';
 import { useEffect } from 'react';
+import { initDB } from './src/features/calendar/data/persistence/calendarDb';
 
 
 export default function App() {
