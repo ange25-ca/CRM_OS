@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../../features/home/screens/HomeScreen";
 import StackNavigator from "../stacks/StackNavigator";
+import ContactsTestScreen from "../../features/contacs/presentation/components/pages/ContactTestScreen";
 
 
 const Tabs = createBottomTabNavigator();
@@ -20,6 +21,11 @@ export default function TabsNavigator(){
                 name="CalendarTab"
                 component={StackNavigator}
                 options={{title:'Calendario'}}
+            />
+            <Tabs.Screen 
+                name="Contac"
+                component={ContactsTestScreen}
+                options={{title: 'Contact'}}
             />
         </Tabs.Navigator>
     )
