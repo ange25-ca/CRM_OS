@@ -7,6 +7,6 @@
   },
   "include": [
     "src",
-    "src/features/calendar/types/expo-sqlite-legacy.d.ts"
+    "src/types/expo-sqlite-legacy.d.ts"
   ]
 }
