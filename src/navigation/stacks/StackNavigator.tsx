@@ -6,9 +6,12 @@ import DayViewScreen from '../../features/calendar/presentation/components/pages
 /*Se crea la stack con los types del calendario */
 const Stack = createNativeStackNavigator<CalendarStackParamList>();
 
-export default function StackNavigator(){
-    return(
-        <Stack.Navigator>
+export default function StackNavigator() {
+    return (
+        <Stack.Navigator
+            initialRouteName="CalendarScreen"      
+            screenOptions={{ headerShown: false }}
+        >
             <Stack.Screen
                 name="CalendarScreen"
                 component={CalendarScreen}
@@ -17,12 +20,13 @@ export default function StackNavigator(){
                     headerShown: false,
                 }}
             />
-            <Stack.Screen 
+            <Stack.Screen
                 name="DayViewScreen"
                 component={DayViewScreen}
                 options={{
                     headerShown: false,
-                    title:"Day View"}}
+                    title: "Day View"
+                }}
             />
         </Stack.Navigator>
     )

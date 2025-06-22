@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../../features/home/screens/HomeScreen";
+import HomeScreen from "../../features/home/Presentation/pages/HomeScreen";
 import StackNavigator from "../stacks/StackNavigator";
 import ContactsScreen from "../../features/contacs/presentation/components/pages/ContactSscren";
 
@@ -21,6 +21,7 @@ export default function TabsNavigator(){
                 name="CalendarTab"
                 component={StackNavigator}
                 options={{title:'Calendario'}}
+                initialParams={{ screen: 'CalendarScreen' }}
             />
             <Tabs.Screen 
                 name="Contac"
