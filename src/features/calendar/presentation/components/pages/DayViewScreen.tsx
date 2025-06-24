@@ -20,8 +20,6 @@ export default function DayViewScreen() {
 
   /*Recibe la fecha como parámetro */
   const { date } = useRoute<DayViewRouteProp>().params;
-    console.log("▶️ DayViewScreen recibe estas params.date:", date);
-
 
   /*Se usa el store para los eventos */
   const events = useCalendarStore(state => state.events);

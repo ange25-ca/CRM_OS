@@ -21,7 +21,7 @@ export function FabButton({
 const styles = StyleSheet.create({
     fab: {
         position: "absolute",
-        bottom: 32,
+        bottom: 100,
         right: 24,
         backgroundColor: "#6096B4",
         width: 56,

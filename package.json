@@ -29,7 +29,8 @@
     "zustand": "^5.0.5",
     "expo-file-system": "~18.1.10",
     "expo-asset": "~11.1.5",
-    "expo-contacts": "~14.2.5"
+    "expo-contacts": "~14.2.5",
+    "@expo/vector-icons": "^14.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
