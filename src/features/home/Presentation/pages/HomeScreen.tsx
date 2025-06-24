@@ -21,16 +21,20 @@ type NavProp = CompositeNavigationProp<
 export default function HomeScreen(){
   const navigation = useNavigation<NavProp>();
 
+  /*Se generan los días */
   const days: DayItem[] = generateWeekDays();
+
+  /*Se guardan el DayItem completo */
   const [selectedDay, setSelectedDay]= useState<DayItem>(
     days.find(d => d.isToday) || days[0]
   );
 
+  /*Al seleccionar navega */
   const handleSelectDate = (day: DayItem) => {
     setSelectedDay(day);
     navigation.navigate("CalendarTab", {
       screen: "DayViewScreen",
-      params: { date: day.date },
+      params: { date: day.isoDate },
     });
   };
 
@@ -39,7 +43,7 @@ export default function HomeScreen(){
       <HomeHeader />
       <DaySelector 
         days={days}
-        selectedDate={selectedDay.date}
+        selectedDate={selectedDay.isoDate}
         onSelectDate={handleSelectDate}
       />
       {/*Se prueba el diseño de la TaskCard con datos provisionales*/}

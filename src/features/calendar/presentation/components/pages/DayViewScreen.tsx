@@ -1,7 +1,7 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { View, Text, FlatList, StyleSheet,} from "react-native";
 import { CalendarStackParamList } from "../../../../../navigation/stacks/types/types";
-import {  useEffect, useState } from "react";
+import {  useCallback, useEffect, useState } from "react";
 import AddEventForm from "../organisms/AddEventForm";
 import ReactNativeModal from "react-native-modal";
 import { useCalendarStore } from "../../viewmodel/calendarStore";
@@ -13,18 +13,21 @@ import { EventItem } from "../molecules/EventItem";
 
 
 /*Se define el tipo especifico de la ruta */
-type DayViewRouteProp = RouteProp<CalendarStackParamList, 'DayViewScreen'>;
+type DayViewRouteProp = RouteProp<
+CalendarStackParamList, 'DayViewScreen'>;
 
 export default function DayViewScreen() {
 
   /*Recibe la fecha como parámetro */
-  const route = useRoute<DayViewRouteProp>();
-  const { date } = route.params;
+  const { date } = useRoute<DayViewRouteProp>().params;
+    console.log("▶️ DayViewScreen recibe estas params.date:", date);
+
 
   /*Se usa el store para los eventos */
   const events = useCalendarStore(state => state.events);
   const loadEvents = useCalendarStore(state => state.loadEvents);
 
+  /*Modal */
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHour, setSelectedHour] = useState<number | undefined>(undefined);
   const [editingEvent, setEditingEvent] = useState<EventType |null>(null);
@@ -39,8 +42,14 @@ export default function DayViewScreen() {
 
   /*Se cambia exclusivamente cuando cambia la fecha*/
   useEffect(() => {
-   loadEvents(date);
-  }, [date]);
+    loadEvents(date);
+  }, [date, loadEvents]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadEvents(date);
+    }, [date])
+  );
 
   /*Operaciones con el modal */
   const openModal = (hour?: number, eventToEdit?: EventType) => {
