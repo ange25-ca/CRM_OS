@@ -10,8 +10,6 @@ import * as Notifications from "expo-notifications";
 Notifications.setNotificationHandler({
   handleNotification: async (): Promise<Notifications.NotificationBehavior> => {
     return {
-      /*Determina si se muestra la alerta */
-      shouldShowAlert:  true,
       /*Controla si se reproduce el sonido de la notificacion */
       shouldPlaySound: false,
       /*Actualiza el numero de notificaciones no leidas */

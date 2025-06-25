@@ -1,4 +1,4 @@
-import { View, StyleSheet} from "react-native";
+import { View, StyleSheet, Text} from "react-native";
 import HomeHeader from "../components/organisms/HomeHeader";
 import DaySelector, {generateWeekDays, DayItem} from "../components/molecules/DaySelector";
 import TaskCard from '../components/molecules/TaskCard';
@@ -9,8 +9,9 @@ import { CompositeNavigationProp, useNavigation } from "@react-navigation/native
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { TabParamList } from "../../../../navigation/tabs/types/TabsType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TestNotification from "../components/TestNotification";
+import { useCalendarStore } from "../../../calendar/presentation/viewmodel/calendarStore";
 
 
 /*Se combinan el tab y el stack anidado */
@@ -30,6 +31,15 @@ export default function HomeScreen(){
     days.find(d => d.isToday) || days[0]
   );
 
+  /*Se subscribe a los eventos del store de calendar */
+  const events = useCalendarStore((s) => s.events);
+  const loadEvents = useCalendarStore((s) => s.loadEvents);
+
+  /*Si cambia el día seleccionado, recarga los eventos */
+  useEffect(() => {
+    loadEvents(selectedDay.isoDate);
+  }, [selectedDay.isoDate]);
+
   /*Al seleccionar navega */
   const handleSelectDate = (day: DayItem) => {
     setSelectedDay(day);
@@ -47,20 +57,20 @@ export default function HomeScreen(){
         selectedDate={selectedDay.isoDate}
         onSelectDate={handleSelectDate}
       />
-      {/*Se prueba el diseño de la TaskCard con datos provisionales*/}
-      <TaskCard
-        time="09:00 AM"
-        title="Reunión con Ana"
-        description="Revisar entregables semanales"
-        color="#93BFCF" />
-      <TaskCard
-        time="11:30 AM"
-        title="Llamada con Pedro"
-        description="Confirmar detalles del CRM"
-        color="#BDCDD6"
-      />
-      {/*Notificaciones */}
-      <TestNotification/>
+      {events.length === 0 ? (
+        <Text style={styles.noEvents}>No hay eventos para este día</Text>
+      ): (
+        events.map((evt) => (
+          <TaskCard
+            key={evt.id}
+            time={`${evt.hour}:00`}        // o formatea como prefieras
+            title={evt.title}
+            description={evt.notes}
+            // podrías elegir un color según tipo, prioridad, etc.
+            color="#93BFCF"
+          />
+        ))
+      )}
     </View>
   )
 }
@@ -69,5 +79,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 30
+  },
+  noEvents: {
+    marginTop: 20,
+    textAlign: "center",
+    color: "#666",
   },
 });
