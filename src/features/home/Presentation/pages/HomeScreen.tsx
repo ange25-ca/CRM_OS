@@ -10,6 +10,7 @@ import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { TabParamList } from "../../../../navigation/tabs/types/TabsType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useState } from "react";
+import TestNotification from "../components/TestNotification";
 
 
 /*Se combinan el tab y el stack anidado */
@@ -58,6 +59,8 @@ export default function HomeScreen(){
         description="Confirmar detalles del CRM"
         color="#BDCDD6"
       />
+      {/*Notificaciones */}
+      <TestNotification/>
     </View>
   )
 }

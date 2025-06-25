@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import * as Calendar from 'expo-calendar';
 import * as Contacts from 'expo-contacts';
+import * as Notifications from "expo-notifications";
+
 
 /*Se declaran los tipos del estado*/
 type PermissionsState = {
     /*Estado del permiso, es decir, si fue conceddo, denegado o aún no se solicita */
     calendarGranted: boolean | null;
     contactsGranted: boolean | null;
+    notificationsGranted: boolean | null;
 
     /*Permite solicitar el permiso y actualizar el estado */
     checkCalendarPermission: () => Promise<void>;
@@ -16,6 +19,10 @@ type PermissionsState = {
     checkContactsPermission: () => Promise<void>;
     ensureContactsPermission: () => Promise<void>;
 
+    /* Permite solicitar el permiso de las notificaciones */
+    checkNotificationsPermission: () => Promise<void>;
+    ensureNotificationsPermission: () => Promise<void>;
+
 };
 
 /* Se crea el store*/
@@ -24,6 +31,8 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     calendarGranted: null,
     /*Se declara el estado inicial de los contactos */
     contactsGranted: null,
+    /*Se declara el estado de las notificaciones */
+    notificationsGranted: null,
 
     /*Función que solicita el permiso al sistema */
     checkCalendarPermission: async () => {
@@ -57,4 +66,21 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
             throw new Error('Permiso de contactos denegado');
         }
     },
+
+    /*Notificaciones */
+    checkNotificationsPermission: async () => {
+        const { status } = await Notifications.requestPermissionsAsync();
+        set({ notificationsGranted: status === "granted" });
+    },
+
+    ensureNotificationsPermission: async () => {
+        const granted = get().notificationsGranted;
+        if (granted === null) {
+            await get().checkNotificationsPermission();
+        }
+        if (!get().notificationsGranted) {
+            throw new Error("Permiso de notificaciones denegado");
+        }
+    },
+
 }));
