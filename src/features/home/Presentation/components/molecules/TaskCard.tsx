@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 /*Se declaran los tipos de la tarjeta de tareas */
 type TaskCardProps = {
@@ -7,31 +8,42 @@ type TaskCardProps = {
     /*Se tiene como opciones: */
     description?: string;
     color?: string;
+    onPress?: () => void;
+    showTime?: boolean;
 };
 
-/*Se crea la funcion de la tajeta que resivira 4 props anteriormente declaras*/
-export default function TaskCard({time, title, description, color='#6096B4'}: TaskCardProps){
- return (
-   <View style={styles.container}>
-    {/*Se muestra la hora de la tarea */}
-        <Text style={styles.time}>{time}</Text>
-        {/*Tarjeta de tarea*/}
-        <View style={styles.card}>
-            {/*Franja de colores */}
-            <View style={[styles.colorBar, { backgroundColor: color}]}/>
-            {/*Información del taskcard */}
-            <View style={styles.content}>
-                {/*Se visualiza el titulo */}
-                <Text style={styles.title}>{title}</Text>
-                {/*Muestra la descripción en caso de que exista */}
-                {description && <Text style={styles.description}>{description}</Text>}
+/*Se crea la funcion de la tajeta que recibira 4 props anteriormente declaras*/
+export default function TaskCard({ time, title, description, color = '#6096B4', onPress , showTime=true}: TaskCardProps) {
+    return (
+        /*Se hace presionable el evento */
+        <Pressable
+            onPress={onPress}
+            style={({ pressed }) => [
+                styles.container,
+                pressed && { opacity: 0.6 },
+            ]}
+        >
+            <View style={styles.container}>
+                {/*Se muestra la hora de la tarea */}
+                <Text style={styles.time}>{time}</Text>
+                {/*Tarjeta de tarea*/}
+                <View style={styles.card}>
+                    {/*Franja de colores */}
+                    <View style={[styles.colorBar, { backgroundColor: color }]} />
+                    {/*Información del taskcard */}
+                    <View style={styles.content}>
+                        {/*Se visualiza el titulo */}
+                        <Text style={styles.title}>{title}</Text>
+                        {/*Muestra la descripción en caso de que exista */}
+                        {description && <Text style={styles.description}>{description}</Text>}
+                    </View>
+                </View>
             </View>
-        </View>
-   </View> 
- )
+        </Pressable>
+    )
 }
 
-{/*Se crean los estilos correspondientes*/}
+{/*Se crean los estilos correspondientes*/ }
 const styles = StyleSheet.create({
     container: {
         marginTop: 20,

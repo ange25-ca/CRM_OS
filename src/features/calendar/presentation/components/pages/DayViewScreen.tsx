@@ -18,8 +18,8 @@ CalendarStackParamList, 'DayViewScreen'>;
 
 export default function DayViewScreen() {
 
-  /*Recibe la fecha como parámetro */
-  const { date } = useRoute<DayViewRouteProp>().params;
+  /*Recibe los parametros*/
+  const { date, initialHour, editingEvent: routEvent } = useRoute<DayViewRouteProp>().params;
 
   /*Se usa el store para los eventos */
   const events = useCalendarStore(state => state.events);
@@ -31,7 +31,7 @@ export default function DayViewScreen() {
   const [editingEvent, setEditingEvent] = useState<EventType |null>(null);
 
   /*Lista de las horas del día */
-  const hours = Array.from({ length: 15 }, (_, i) => 7 + i);
+  const hours = Array.from({ length: 24 }, (_, i) => i);
   const hourItems = hours.map(hour => ({
     hour,
     events: events.filter(e => e.hour === hour)
@@ -41,7 +41,12 @@ export default function DayViewScreen() {
   /*Se cambia exclusivamente cuando cambia la fecha*/
   useEffect(() => {
     loadEvents(date);
-  }, [date, loadEvents]);
+    if(routEvent) {
+      setSelectedHour(initialHour);
+      setEditingEvent(routEvent);
+      setModalVisible(true);
+    }
+  }, [date, initialHour, routEvent, loadEvents]);
 
   useFocusEffect(
     useCallback(() => {
@@ -108,7 +113,7 @@ export default function DayViewScreen() {
           <AddEventForm
             date={date}
             hour={selectedHour}
-            editingEvent={editingEvent!}
+            editingEvent={editingEvent ?? undefined}
             onSuccess={() => {
               closeModal();
               loadEvents(date);
