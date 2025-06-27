@@ -3,7 +3,7 @@ import { View,StyleSheet} from "react-native";
 import CalendarView from "../organisms/CalendarView";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { CalendarStackParamList } from "../../../../../navigation/stacks/types/types";
+import { CalendarStackParamList } from "../../navigation/types/types";
 
 export default function CalendarScreen() {
   /*Permite la navegación en stack */

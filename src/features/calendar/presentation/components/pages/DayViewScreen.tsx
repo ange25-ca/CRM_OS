@@ -1,6 +1,6 @@
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { View, Text, FlatList, StyleSheet,} from "react-native";
-import { CalendarStackParamList } from "../../../../../navigation/stacks/types/types";
+import { CalendarStackParamList } from "../../navigation/types/types";
 import {  useCallback, useEffect, useState } from "react";
 import AddEventForm from "../organisms/AddEventForm";
 import ReactNativeModal from "react-native-modal";

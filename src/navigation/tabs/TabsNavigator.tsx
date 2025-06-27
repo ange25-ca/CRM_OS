@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../../features/home/Presentation/pages/HomeScreen";
-import StackNavigator from "../stacks/StackNavigator";
-import ContactsScreen from "../../features/contacs/presentation/components/pages/ContactSscren";
 import { StyleSheet, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import CalendarStackNavigator from "../../features/calendar/presentation/navigation/CalendarStack";
+import ContactStackNavigator from "../../features/contacs/presentation/navigation/ContactStack";
 
 
 const Tabs = createBottomTabNavigator();
@@ -41,7 +41,7 @@ export default function TabsNavigator() {
             />
             <Tabs.Screen
                 name="CalendarTab"
-                component={StackNavigator}
+                component={CalendarStackNavigator}
                 options={{
                     title: 'Calendar',
                     tabBarIcon: ({ color, size }) => (
@@ -51,11 +51,10 @@ export default function TabsNavigator() {
                         />
                     )
                 }}
-                initialParams={{ screen: 'CalendarScreen' }}
             />
             <Tabs.Screen
-                name="Contac"
-                component={ContactsScreen}
+                name="ContacTab"
+                component={ContactStackNavigator}
                 options={{
                     title: 'Contact',
                     tabBarIcon: ({ color, size }) => (

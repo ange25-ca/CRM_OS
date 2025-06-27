@@ -1,8 +1,8 @@
 import { NavigatorScreenParams } from "@react-navigation/native";
-import { CalendarStackParamList } from "../../stacks/types/types";
+import { CalendarStackParamList } from "../../../features/calendar/presentation/navigation/types/types";
 
 export type TabParamList = {
   Home: undefined;       
   CalendarTab: NavigatorScreenParams<CalendarStackParamList>; 
-  Contac: undefined;
+  ContacTab: NavigatorScreenParams<CalendarStackParamList>;
 };

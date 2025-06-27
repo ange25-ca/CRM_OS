@@ -4,13 +4,12 @@ import DaySelector, {generateWeekDays, DayItem} from "../components/molecules/Da
 import TaskCard from '../components/molecules/TaskCard';
 
 /*Navegación */
-import type { CalendarStackParamList } from "../../../../navigation/stacks/types/types";
+import type { CalendarStackParamList } from "../../../calendar/presentation/navigation/types/types";
 import { CompositeNavigationProp, useNavigation } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { TabParamList } from "../../../../navigation/tabs/types/TabsType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
-import TestNotification from "../components/TestNotification";
 import { useCalendarStore } from "../../../calendar/presentation/viewmodel/calendarStore";
 
 
@@ -63,10 +62,9 @@ export default function HomeScreen(){
         events.map((evt) => (
           <TaskCard
             key={evt.id}
-            time={`${evt.hour}:00`}        // o formatea como prefieras
+            time={`${evt.hour}:00`}        
             title={evt.title}
             description={evt.notes}
-            // podrías elegir un color según tipo, prioridad, etc.
             color="#93BFCF"
           />
         ))

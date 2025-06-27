@@ -12,17 +12,29 @@ type ContactsState = {
   /*Marca de sincronizacíon completa  */
   syncAndLoad: () => Promise<void>;
   /*Estado del permiso */
-  granted: boolean | null;  
+  granted: boolean | null;
   /*Verificación del permiso */
-  checkPermission:() => Promise<void>;
+  checkPermission: () => Promise<void>;
+  updateContact: (id: string, data: { name: string; phone: string }) => void;
 
+
+  /*Tags */
+  tagsByContactId: Record<string, string[]>;
+  addTag: (cid: string, tag: string) => void;
+  removeTag: (cid: string, tag: string) => void;
+  updateTag: (cid: string, oldT: string, newT: string) => void;
+
+  // Para relación
+  relationByContactId: Record<string, string>;
+  setRelation: (cid: string, relation: string) => void;
 };
 
 export const useContactsStore = create<ContactsState>((set, get) => ({
   /*Se inicializa los varoles de la interface */
   contacts: [],
   loading: false,
-  granted:null,
+  granted: null,
+  tagsByContactId: {},
 
   init: async () => {
     /*Se inicia la base de datos local */
@@ -35,7 +47,7 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
       await usePermissionsStore
         .getState()
         .ensureContactsPermission();
-        /*Permiso concedido */
+      /*Permiso concedido */
       set({ granted: true });
     } catch {
       /*Permiso denegado */
@@ -65,4 +77,49 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
       set({ loading: false });
     }
   },
+
+  updateContact: (id, { name, phone }) =>
+    set(s => ({
+      contacts: s.contacts.map(c =>
+        c.id === id ? { ...c, name, phone } : c
+      ),
+    })),
+
+  /*Permite añadir las tags */
+  addTag: (cid, tag) =>
+    set(s => ({
+      tagsByContactId: {
+        ...s.tagsByContactId,
+        [cid]: [...(s.tagsByContactId[cid] || []), tag],
+      },
+    })),
+
+  /*Remover la tag */
+  removeTag: (cid, tag) =>
+    set(s => ({
+      tagsByContactId: {
+        ...s.tagsByContactId,
+        [cid]: s.tagsByContactId[cid].filter(t => t !== tag),
+      },
+    })),
+
+  /*Actualiza las tags */
+  updateTag: (cid, oldT, newT) =>
+    set(s => ({
+      tagsByContactId: {
+        ...s.tagsByContactId,
+        [cid]: s.tagsByContactId[cid].map(t => (t === oldT ? newT : t)),
+      },
+    })),
+
+  // Estado y acción para relación
+  relationByContactId: {},
+  setRelation: (cid, relation) =>
+    set(s => ({
+      relationByContactId: {
+        ...s.relationByContactId,
+        [cid]: relation,
+      },
+    })),
+
 }));
