@@ -9,22 +9,22 @@ type ExtendedCalendar = Calendar.Calendar & { isHidden?: boolean };
 export async function getEventsForDay(dateString: string): Promise<Calendar.Event[]> {
   /*Se obtiene los calendarios */
   const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+
   /* Se le comunica que un cast puede tener un isHidden */
   const usableCalendars = calendars as ExtendedCalendar[];
 
-  /*Se busca el primer calendario que no esté oculto*/
-  const calendarId = usableCalendars.find(cal => !cal.isHidden)?.id ??
-    usableCalendars[0]?.id;
+  const calendarIds = usableCalendars.filter(
+    cal => !cal.isHidden).map(cal => cal.id);
 
-  /*En caso de no haber, se retorna un array vacio */
-  if (!calendarId) return [];
+  if (calendarIds.length === 0) return [];
 
-  /*Se crea el rango de fechas */
-  const start = new Date(dateString);
-  const end = new Date(dateString);
-  end.setHours(23, 59, 59, 999);
+  /*Se establece la hora y fecha */
+  const [year, month, day] = dateString.split('-').map(Number);
+  const start = new Date(year, month - 1, day, 0, 0, 0);
+  const end = new Date(year, month - 1, day, 23, 59, 59);
 
-  return Calendar.getEventsAsync([calendarId], start, end);
+  /*Se retorna los eventos */
+  return await Calendar.getEventsAsync(calendarIds, start, end);
 }
 
 /*Se crea la función para crear eventos por día */
@@ -75,12 +75,11 @@ export async function createEventForDate(
   }
 
   // Creamos fecha de inicio a las 10:00 AM y fin a las 11:00 AM
-  const start = new Date(dateString);
-  start.setHours(hour ?? 10, 0);
+  const [year, month, day] = dateString.split('-').map(Number);
+  const start = new Date(year, month - 1, day, hour ?? 10, 0, 0);
   const end = new Date(start.getTime() + 60 * 60 * 1000);
 
-  // Creamos el evento con zona horaria local
-  return await Calendar.createEventAsync(calendarId, {
+  const eventId = await Calendar.createEventAsync(calendarId, {
     title,
     notes,
     startDate: start,
@@ -88,26 +87,28 @@ export async function createEventForDate(
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
+  return eventId;
+
 }
 
 /*Funcion para actualizar un evento existente */
 export async function updateEventNative(
-  id:    string,
+  id: string,
   title: string,
   notes: string,
-  date:  string,
-  hour:  number
+  date: string,
+  hour: number
 ): Promise<void> {
   const [y, m, d] = date.split('-').map(Number);
   const start = new Date(y, m - 1, d, hour);
-  const end   = new Date(start.getTime() + 60 * 60 * 1000);
+  const end = new Date(start.getTime() + 60 * 60 * 1000);
 
   await Calendar.updateEventAsync(id, {
     title,
     notes,
     startDate: start,
-    endDate:   end,
-    timeZone:  Intl.DateTimeFormat().resolvedOptions().timeZone
+    endDate: end,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
   });
 }
 

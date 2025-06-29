@@ -80,12 +80,18 @@ export default function DayViewScreen() {
   };
 
   /*Cambia el formato de la fecha */
-  const formattedDate = new Date(date).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  /*Helper que  permite interpretar la zona horario */
+  function parseLocalDate(yyyyMmDd: string): Date {
+  const [year, month, day] = yyyyMmDd.split('-').map(Number);
+  return new Date(year, month - 1, day); 
+}
+
+  const formattedDate = parseLocalDate(date).toLocaleDateString('en-US', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 
   return (
     <View style={styles.container}>

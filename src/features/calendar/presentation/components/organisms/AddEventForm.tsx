@@ -5,6 +5,7 @@ import { FormField } from "../molecules/FormField";
 import { DateDisplay } from "../molecules/DateDisplay";
 import { ButtonAtom } from "../atoms/Button";
 import { EventType } from "../../../data/persistence/calendarDb";
+import { saveEventWithFallback } from "../../../data/persistence/eventWithFallBack";
 
 /*Los datos que recibe */
 interface Props {
@@ -57,15 +58,22 @@ export default function AddEventForm({ date, onSuccess, onPermissionDenied ,hour
         Alert.alert('Evento actualizado');
       } else {
         /*Se crea */
-        await addEvent(date, title, notes, selectedHour);
-        Alert.alert('Evento agregado');
-      }
-      onSuccess();
-    } catch (err) {
-      console.error('Error al guardar evento:', err);
-      onPermissionDenied?.();
-      Alert.alert('Error', 'No se pudo guardar el evento');
+        await saveEventWithFallback(
+          /*Se genera un idUnico */
+        Date.now().toString(),
+        title,
+        notes,
+        date,
+        selectedHour
+      );
+      Alert.alert('Evento agregado');
     }
+    onSuccess();
+  } catch (err) {
+    console.error('Error al guardar evento:', err);
+    onPermissionDenied?.();
+    Alert.alert('Error', 'No se pudo guardar el evento');
+  }
   };
 
 

@@ -25,8 +25,9 @@ Notifications.setNotificationHandler({
 export default function App() {
   /*Se inicializa la bd */
   useEffect(()=> {
-    initDB();
-  }, []);
+    initDB().catch(
+      err => console.warn('Se encontro un problema con SQLite, se emplea, expo-calendar', err));
+}, []);
 
   return (
     /*Atravez del Gesture permite realizar scroll en DaySelector */
