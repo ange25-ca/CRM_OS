@@ -1,3 +1,4 @@
+import {  MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
 
@@ -5,35 +6,35 @@ import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
 interface FabButtonProps {
     onPress: () => void;
     style?: ViewStyle;
-    label?: string;
 }
 
 export function FabButton({
-    onPress, style, label = '+' }: FabButtonProps) {
+    onPress, style, }: FabButtonProps) {
     return (
         <TouchableOpacity style={[styles.fab, style]} 
             onPress={onPress}>
-            <Text style={styles.fabText}>{label}</Text>
+            <MaterialCommunityIcons 
+                name="calendar-plus" 
+                size={30} color="#6096B4" 
+                style={{ marginTop: 11}}
+
+            />
         </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
     fab: {
-        position: "absolute",
-        bottom: 100,
-        right: 24,
-        backgroundColor: "#6096B4",
-        width: 56,
-        height: 56,
+        bottom: 5,
+        right: 2,
+        width: 45,
+        height: 45,
         borderRadius: 28,
         justifyContent: "center",
         alignItems: "center",
-        elevation: 4,
     },
     fabText: {
-        fontSize: 28,
-        color: "#fff",
+        fontSize: 20,
         fontWeight: "bold",
     },
 });

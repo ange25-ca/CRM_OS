@@ -79,10 +79,25 @@ export default function DayViewScreen() {
     setEditingEvent(null);
   };
 
+  /*Cambia el formato de la fecha */
+  const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Agenda para {date}</Text>
+      <View style={styles.headerRow}>
+      <Text style={styles.headerText}>
+        {formattedDate}
+      </Text>
+      <FabButton
+        onPress={() => openModal(new Date().getHours())}
+        style={styles.fabInline}
+      />
+    </View>
       {/*Lista que muestra la hora por día */}
       <FlatList
         data={hourItems}
@@ -171,5 +186,18 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     minHeight: "40%",
   },
-
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    flex: 1,            
+  },
+  fabInline: {
+   // marginLeft: 8,      
+  }
 });
