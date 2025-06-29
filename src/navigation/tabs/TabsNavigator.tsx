@@ -4,6 +4,7 @@ import { StyleSheet, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import CalendarStackNavigator from "../../features/calendar/presentation/navigation/CalendarStack";
 import ContactStackNavigator from "../../features/contacs/presentation/navigation/ContactStack";
+import SettingScreen from "../../features/settings/presentation/components/pages/SettingsScreen";
 
 
 const Tabs = createBottomTabNavigator();
@@ -61,6 +62,19 @@ export default function TabsNavigator() {
                         <Ionicons name="people-outline"
                             size={size}
                             color={color}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen 
+                name="SettingsScreen"
+                component={SettingScreen}
+                options={{
+                    title: "Settings",
+                    tabBarIcon: ({ color, size}) => (
+                        <Ionicons name="settings-outline"
+                        size={size}
+                        color={color}
                         />
                     )
                 }}

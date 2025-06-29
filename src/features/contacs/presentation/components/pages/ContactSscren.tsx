@@ -1,34 +1,53 @@
 import React, { useEffect } from 'react'
 import { View, Text, FlatList, ActivityIndicator, Alert, Button, StyleSheet, TouchableOpacity, } from 'react-native'
 import { useContactsStore } from '../../viewmodel/useContacsStore';
-import { useNavigation } from "@react-navigation/native";
+import { CompositeNavigationProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ContactStackParamList } from '../../navigation/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import TagAtom from '../atoms/TagAtom';
+import { usePermissionsStore } from '../../../../settings/Permissions/infra/permissionsStore';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { TabParamList } from '../../../../../navigation/tabs/types/TabsType';
 
 /*Se declara el tipo de navegación para los detalles del contacto */
-type NavProp = NativeStackNavigationProp<ContactStackParamList,'ContactDetailScreen'>
+type ContactsScreenNavProp = CompositeNavigationProp<
+  NativeStackNavigationProp<ContactStackParamList, 'ContacScreen'>,
+  BottomTabNavigationProp<TabParamList, 'ContacTab'>
+>;
 
 export default function ContactsScreen() {
-  const {granted, contacts, loading, syncAndLoad, relationByContactId, } = useContactsStore()
+  const { contacts, loading, syncAndLoad, relationByContactId, } = useContactsStore()
 
-  const navigation = useNavigation<NavProp>()
+const navigation = useNavigation<ContactsScreenNavProp>();
+
+  /*Se lee los permisos de contac */
+  const ContactsPermission = usePermissionsStore(
+    state => state.statuses['contacts']
+  );
 
   /*Se navega hacía detalles del contacto */
   const handlePressContact = (contactId: string) => {
     navigation.navigate('ContactDetailScreen', { contactId })
   }
 
-  /*Alerta del permiso para cargar los contactos */
-  useEffect(() => {
-    syncAndLoad().catch(err =>
-      Alert.alert('Error', err.message || 'No autorizado'),
-    )
-  }, [syncAndLoad])
+useEffect(() => {
+  (async () => {
+    try {
+      await syncAndLoad();
+    } catch (err: any) {
+      if (err.message.includes('Permiso de contactos denegado')) {
+        navigation.navigate('SettingsScreen');
+      } else {
+        Alert.alert('Error', err.message);
+      }
+    }
+  })();
+}, [syncAndLoad, navigation]);
 
-  /*Icono de carga ... en caso de estar comprobando los permisos */
-  if (granted === null || loading) {
+
+  // Mientras cargue O el permiso sea indeterminado
+  if (loading || ContactsPermission === null) {
     return (
       <View style={styles.center}>
         <ActivityIndicator />
@@ -36,21 +55,10 @@ export default function ContactsScreen() {
     )
   }
 
-  /*En caso de no contar con los permisos se agrega un botón */
-  if (!granted) {
-    return (
-      <View style={styles.center}>
-        <Text>Permiso de contactos denegado.</Text>
-        <Button
-          title="Pedir permiso"
-          onPress={() =>
-            syncAndLoad().catch(err =>
-              Alert.alert('Error', err.message || 'No autorizado'),
-            )
-          }
-        />
-      </View>
-    )
+  /*En caso de no contar con los permisos ya no retorna nada, debido a que 
+    ya se disparo la navegación */
+  if (ContactsPermission === false) {
+    return null;
   }
 
   return (

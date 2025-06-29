@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { deleteEventLocally, EventType, getLocalEventsByDate, saveEventLocally, updateEventLocally } from "../../data/persistence/calendarDb";
-import { usePermissionsStore } from "../../../../stores/permissionsStore";
+import { usePermissionsStore } from "../../../settings/Permissions/infra/permissionsStore";
 import { createEventForDate, deleteEventNative, updateEventNative } from "../../data/service/calendarService";
 
 
@@ -32,23 +32,31 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     /*Crea un evento en el calendario nativo y lo guarda localmente */
     addEvent: async (date, title, notes, hour) => {
         /*Asegura los permisos de expo-calendar */
-        const ensure = usePermissionsStore.getState().ensureCalendarPermission;
-        await ensure();
-
+        const { check, request, statuses } = usePermissionsStore.getState();
+        await check("calendar");
+        if (!statuses["calendar"]) {
+            await request("calendar");
+        }
+        if (!usePermissionsStore.getState().statuses["calendar"]) {
+            throw new Error("Permiso del calendario denegado");
+        }
         /*Crea el evento en expo-calendar */
         const eventId = await createEventForDate(date, title, notes, hour);
-
         /*Guarda una copia en SQLite */
         await saveEventLocally(eventId, title, notes, date, hour);
-
         /*Se recarga el estado */
         await get().loadEvents(date);
     },
     /*Actualiza el calendario */
     updateEvent: async ({ id, title, notes = '', date, hour }) => {
-        const ensure = usePermissionsStore.getState().ensureCalendarPermission;
-        await ensure();
-
+        const { check, request, statuses } = usePermissionsStore.getState();
+        await check("calendar");
+        if (!statuses["calendar"]) {
+            await request("calendar");
+        }
+        if (!usePermissionsStore.getState().statuses["calendar"]) {
+            throw new Error("Permiso del calendario denegado");
+        }
         /*Actualiza en el calendario expo*/
         await updateEventNative(id, title, notes, date, hour);
         /* Actualiza el calendario local( SQLite )*/
@@ -58,8 +66,14 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     },
 
     deleteEvent: async (id, date) => {
-        const ensure = usePermissionsStore.getState().ensureCalendarPermission;
-        await ensure();
+        const { check, request, statuses } = usePermissionsStore.getState();
+        await check("calendar");
+        if (!statuses["calendar"]) {
+            await request("calendar");
+        }
+        if (!usePermissionsStore.getState().statuses["calendar"]) {
+            throw new Error("Permiso del calendario denegado");
+        }
 
         /*Borra del calendario de expo*/
         await deleteEventNative(id);

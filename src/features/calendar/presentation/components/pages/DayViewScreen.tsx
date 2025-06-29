@@ -1,7 +1,7 @@
-import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
-import { View, Text, FlatList, StyleSheet,} from "react-native";
+import { CompositeNavigationProp, RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
+import { View, Text, FlatList, StyleSheet, } from "react-native";
 import { CalendarStackParamList } from "../../navigation/types/types";
-import {  useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AddEventForm from "../organisms/AddEventForm";
 import ReactNativeModal from "react-native-modal";
 import { useCalendarStore } from "../../viewmodel/calendarStore";
@@ -10,16 +10,29 @@ import { HourCell } from "../organisms/HourCell";
 import { FabButton } from "../atoms/FabButton";
 import { EventType } from "../../../data/persistence/calendarDb";
 import { EventItem } from "../molecules/EventItem";
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { TabParamList } from "../../../../../navigation/tabs/types/TabsType";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+
 
 
 /*Se define el tipo especifico de la ruta */
 type DayViewRouteProp = RouteProp<
-CalendarStackParamList, 'DayViewScreen'>;
+  CalendarStackParamList, 'DayViewScreen'>;
+
+type DayViewNavProp = CompositeNavigationProp<
+  NativeStackNavigationProp<CalendarStackParamList, 'DayViewScreen'>,
+  BottomTabNavigationProp<TabParamList, 'CalendarTab'>
+>;
 
 export default function DayViewScreen() {
 
   /*Recibe los parametros*/
   const { date, initialHour, editingEvent: routEvent } = useRoute<DayViewRouteProp>().params;
+
+  /*Navegación hacia settings */
+  const navigation = useNavigation<DayViewNavProp>();
 
   /*Se usa el store para los eventos */
   const events = useCalendarStore(state => state.events);
@@ -28,7 +41,7 @@ export default function DayViewScreen() {
   /*Modal */
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHour, setSelectedHour] = useState<number | undefined>(undefined);
-  const [editingEvent, setEditingEvent] = useState<EventType |null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
 
   /*Lista de las horas del día */
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -41,7 +54,7 @@ export default function DayViewScreen() {
   /*Se cambia exclusivamente cuando cambia la fecha*/
   useEffect(() => {
     loadEvents(date);
-    if(routEvent) {
+    if (routEvent) {
       setSelectedHour(initialHour);
       setEditingEvent(routEvent);
       setModalVisible(true);
@@ -74,12 +87,12 @@ export default function DayViewScreen() {
       <FlatList
         data={hourItems}
         keyExtractor={item => item.hour.toString()}
-        renderItem={({ item}) => (
-          <HourCell 
+        renderItem={({ item }) => (
+          <HourCell
             hour={item.hour}
             events={item.events}
             onPress={hour =>
-              openModal(hour)  
+              openModal(hour)
             }
             renderEvent={evt => (
               <EventItem
@@ -94,11 +107,11 @@ export default function DayViewScreen() {
       />
 
       {/* Botton de agregar */}
-        <FabButton 
-          onPress={() => openModal(
-            new Date().getHours()
-          )}
-        />
+      <FabButton
+        onPress={() => openModal(
+          new Date().getHours()
+        )}
+      />
 
       {/*Modal */}
       <ReactNativeModal
@@ -117,6 +130,11 @@ export default function DayViewScreen() {
             onSuccess={() => {
               closeModal();
               loadEvents(date);
+            }}
+            onPermissionDenied={() => {
+              /*Se redirecciona a Settings */
+              const tabNav = navigation.getParent<BottomTabNavigationProp<TabParamList>>();
+              tabNav?.navigate('SettingsScreen');
             }}
           />
         </View>

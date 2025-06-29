@@ -12,10 +12,11 @@ interface Props {
   /*Cierra el modal */
   onSuccess: () => void;
   hour?: number;
+  onPermissionDenied?: () => void;
 }
 
 /*Se crea la función para el modal add event*/
-export default function AddEventForm({ date, onSuccess, hour = 0, editingEvent }: Props & { editingEvent?: EventType }) {
+export default function AddEventForm({ date, onSuccess, onPermissionDenied ,hour = 0, editingEvent }: Props & { editingEvent?: EventType }) {
   /*Recibe */
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
@@ -62,6 +63,7 @@ export default function AddEventForm({ date, onSuccess, hour = 0, editingEvent }
       onSuccess();
     } catch (err) {
       console.error('Error al guardar evento:', err);
+      onPermissionDenied?.();
       Alert.alert('Error', 'No se pudo guardar el evento');
     }
   };

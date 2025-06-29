@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Button, Alert } from "react-native";
 import * as Notifications from "expo-notifications";
-import { usePermissionsStore } from "../../../../stores/permissionsStore";
+import { usePermissionsStore } from "../../../settings/Permissions/infra/permissionsStore";
 
 export default function TestNotification() {
   const ensureNotifications = usePermissionsStore(
