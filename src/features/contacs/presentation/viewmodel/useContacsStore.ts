@@ -25,6 +25,9 @@ type ContactsState = {
   // Para relación
   relationByContactId: Record<string, string>;
   setRelation: (cid: string, relation: string) => void;
+
+  /*Para eliminar */
+  deleteContact:(id: string) => Promise<void>;
 };
 
 export const useContactsStore = create<ContactsState>((set, get) => ({
@@ -118,5 +121,17 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
         [cid]: relation,
       },
     })),
+
+    deleteContact: async (id) => {
+  try {
+    await DB.deleteContact(id); // 👈 función que borra en SQLite
+    set((s) => ({
+      contacts: s.contacts.filter(c => c.id !== id),
+    }));
+  } catch (error) {
+    console.error('❌ Error al eliminar contacto:', error);
+    throw error;
+  }
+},
 
 }));

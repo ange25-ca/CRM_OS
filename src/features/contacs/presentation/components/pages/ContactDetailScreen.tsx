@@ -5,6 +5,7 @@ import { useContactsStore } from '../../viewmodel/useContacsStore';
 import { ContactStackParamList } from '../../navigation/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import TagList from '../organisms/TagList';
+import TextButtonAtom from '../atoms/IconButtonAtom';
 
 /*Se declara el tipo de navegación */
 type Props = NativeStackScreenProps<ContactStackParamList, 'ContactDetailScreen'>;
@@ -34,19 +35,19 @@ export default function ContactDetailScreen({ route, navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-    style={{ flex: 1 }}                             
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} 
-  >
-    <ScrollView
-      style={styles.screenContent}
-      contentContainerStyle={{ 
-        flexGrow: 1,                
-        padding: 16, 
-        paddingBottom: 40 
-      }}
-      keyboardShouldPersistTaps="handled"  
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
+      <ScrollView
+        style={styles.screenContent}
+        contentContainerStyle={{
+          flexGrow: 1,
+          padding: 16,
+          paddingBottom: 40
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Avatar con inicial */}
         <View style={styles.avatarWrapper}>
           <View >
@@ -96,11 +97,32 @@ export default function ContactDetailScreen({ route, navigation }: Props) {
             onUpdateTag={(o, n) => updateTag(contactId, o, n)}
           />
         </View>
-
         {/* Botón Guardar */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>GUARDAR</Text>
         </TouchableOpacity>
+        <TextButtonAtom
+          title="ELIMINAR"
+          backgroundColor="#B00020"
+          onPress={() => {
+            Alert.alert(
+              'Eliminar contacto',
+              '¿Estás seguro de que deseas eliminar este contacto?',
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                  text: 'Eliminar',
+                  style: 'destructive',
+                  onPress: () => {
+                    useContactsStore.getState().deleteContact(contactId);
+                    navigation.goBack();
+                  },
+                },
+              ]
+            );
+          }}
+        />
+
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -112,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   screenContent: {
-    flex: 1, 
+    flex: 1,
     backgroundColor: '#FFF'
   },
   avatarWrapper: {
@@ -165,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  tags:{
+  tags: {
     paddingHorizontal: 8
   },
   icon: {

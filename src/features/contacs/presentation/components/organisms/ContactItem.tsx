@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import { Contact } from '../../../domain/entities/Contact';
 import TagList from './TagList';
+import { Ionicons } from '@expo/vector-icons';
 
 /*Se define las propiedasdes del componente ContactItemProps */
 export type ContactItemProps = {
@@ -9,53 +10,56 @@ export type ContactItemProps = {
   onPress?: (contact: Contact) => void;
   /*Seleecion de las relacion */
   selectedRelation?: string;
-  onSelectRelation?: (relation:string) => void;
+  onSelectRelation?: (relation: string) => void;
   /*Etiquetas */
   tags: string[];
   onAddTag: (tag: string) => void;
   onRemoveTag: (tag: string) => void;
   onUpdateTag: (oldTag: string, newTag: string) => void;
+
+  /*Eliminar el contacto */
+  onDelete: () => void;
 };
 
-export default function ContactItem({ contact, onPress, tags, onAddTag, onRemoveTag, onUpdateTag, selectedRelation, onSelectRelation }: ContactItemProps){
-  
+export default function ContactItem({ contact, onPress, tags, onAddTag, onRemoveTag,
+  onUpdateTag, selectedRelation, onSelectRelation, onDelete }: ContactItemProps) {
+
   /*Función que pasa el contact atravez de un click */
   const handlePress = (e: GestureResponderEvent) => {
     onPress?.(contact);
   };
   return (
     <View style={styles.card}>
-      <TouchableOpacity 
-      activeOpacity={0.8}
+      <TouchableOpacity
+        activeOpacity={0.8}
         style={styles.touchable}
         onPress={handlePress}>
-      
-      {/*Información */}
-      <View style={styles.infoContainer}>
-        {/*Se muestra el nombre */}
-        <Text style={styles.name}>
-          {contact.name}
-        </Text>
-          {/*Se muestra el numero telefonico) */}
-        {contact.phone && 
-          <Text style={styles.subText}>{contact.phone}</Text>}
-          {/*Se muestra el email */}
-        {contact.email && 
-          <Text style={styles.subText}>{contact.email}</Text>}
-      </View>
-      
-      {/* Aquí insertas la lista de tags */}
-      <TagList
-        selectedRelation={selectedRelation}
-        onSelectRelation={onSelectRelation!}
-        tags={tags}
-        onAddTag={onAddTag}
-        onRemoveTag={onRemoveTag}
-        onUpdateTag={onUpdateTag}
-      />
 
-    </TouchableOpacity>
-    </View>    
+        {/*Información */}
+        <View style={styles.infoContainer}>
+          {/*Se muestra el nombre */}
+          <Text style={styles.name}>
+            {contact.name}
+          </Text>
+          {/*Se muestra el numero telefonico) */}
+          {contact.phone &&
+            <Text style={styles.subText}>{contact.phone}</Text>}
+          {/*Se muestra el email */}
+          {contact.email &&
+            <Text style={styles.subText}>{contact.email}</Text>}
+        </View>
+
+        {/* Aquí insertas la lista de tags */}
+        <TagList
+          selectedRelation={selectedRelation}
+          onSelectRelation={onSelectRelation!}
+          tags={tags}
+          onAddTag={onAddTag}
+          onRemoveTag={onRemoveTag}
+          onUpdateTag={onUpdateTag}
+        />
+      </TouchableOpacity>
+    </View>
   );
 }
 
