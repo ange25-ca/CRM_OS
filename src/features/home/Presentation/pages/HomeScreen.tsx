@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import HomeHeader from "../components/organisms/HomeHeader";
 import DaySelector, { generateWeekDays, DayItem } from "../components/molecules/DaySelector";
 import TaskCard from '../components/molecules/TaskCard';
@@ -34,6 +34,8 @@ export default function HomeScreen() {
   /*Se subscribe a los eventos del store de calendar */
   const events = useCalendarStore((s) => s.events);
   const loadEvents = useCalendarStore((s) => s.loadEvents);
+  /*Eliminar la lista */
+  const deleteEvent = useCalendarStore(s=> s.deleteEvent);
 
   /*Si cambia el día seleccionado, recarga los eventos */
   useFocusEffect(
@@ -55,6 +57,29 @@ export default function HomeScreen() {
   const sortedEvents = [...events].sort((a, b) => a.hour - b.hour);
   {/*Control de la hora por grupos */ }
   let prevHour: number | null = null;
+
+  /*Eliminación */
+  const confirmDelete = (id: string) => {
+  Alert.alert(
+    "Eliminar evento",
+    "¿Seguro que quieres eliminar este evento?",
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+            try {
+            // 3. Aquí pasas ambos argumentos al store
+            await deleteEvent(id, selectedDay.isoDate);
+          } catch (error) {
+            console.error("Error borrando evento:", error);
+          }
+        }
+      }
+    ]
+  );
+};
 
   return (
     <View style={styles.container}>
@@ -92,6 +117,7 @@ export default function HomeScreen() {
                     },
                   })
                 }
+                onLongPress={() => confirmDelete(evt.id)}
               />
             );
           })}

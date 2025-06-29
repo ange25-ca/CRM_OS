@@ -9,15 +9,17 @@ type TaskCardProps = {
     description?: string;
     color?: string;
     onPress?: () => void;
+    onLongPress? : () => void;
     showTime?: boolean;
 };
 
 /*Se crea la funcion de la tajeta que recibira 4 props anteriormente declaras*/
-export default function TaskCard({ time, title, description, color = '#6096B4', onPress , showTime=true}: TaskCardProps) {
+export default function TaskCard({ time, title, description, color = '#6096B4', onPress , onLongPress, showTime=true}: TaskCardProps) {
     return (
         /*Se hace presionable el evento */
         <Pressable
             onPress={onPress}
+            onLongPress={onLongPress}
             style={({ pressed }) => [
                 styles.container,
                 pressed && { opacity: 0.6 },
