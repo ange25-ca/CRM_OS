@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, FlatList, ActivityIndicator, Alert, Button, StyleSheet, TouchableOpacity, } from 'react-native'
 import { useContactsStore } from '../../viewmodel/useContacsStore';
 import { CompositeNavigationProp, useNavigation } from "@react-navigation/native";
@@ -9,6 +9,7 @@ import TagAtom from '../atoms/TagAtom';
 import { usePermissionsStore } from '../../../../settings/Permissions/infra/permissionsStore';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { TabParamList } from '../../../../../navigation/tabs/types/TabsType';
+import NewContactModal from '../organisms/NewContactModal';
 
 /*Se declara el tipo de navegación para los detalles del contacto */
 type ContactsScreenNavProp = CompositeNavigationProp<
@@ -19,7 +20,7 @@ type ContactsScreenNavProp = CompositeNavigationProp<
 export default function ContactsScreen() {
   const { contacts, loading, syncAndLoad, relationByContactId, } = useContactsStore()
 
-const navigation = useNavigation<ContactsScreenNavProp>();
+  const navigation = useNavigation<ContactsScreenNavProp>();
 
   /*Se lee los permisos de contac */
   const ContactsPermission = usePermissionsStore(
@@ -31,19 +32,23 @@ const navigation = useNavigation<ContactsScreenNavProp>();
     navigation.navigate('ContactDetailScreen', { contactId })
   }
 
-useEffect(() => {
-  (async () => {
-    try {
-      await syncAndLoad();
-    } catch (err: any) {
-      if (err.message.includes('Permiso de contactos denegado')) {
-        navigation.navigate('SettingsScreen');
-      } else {
-        Alert.alert('Error', err.message);
+  /*Modal de creación de contacto */
+  const [modalVisible, setModalVisible] = useState(false);
+
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await syncAndLoad();
+      } catch (err: any) {
+        if (err.message.includes('Permiso de contactos denegado')) {
+          navigation.navigate('SettingsScreen');
+        } else {
+          Alert.alert('Error', err.message);
+        }
       }
-    }
-  })();
-}, [syncAndLoad, navigation]);
+    })();
+  }, [syncAndLoad, navigation]);
 
 
   // Mientras cargue O el permiso sea indeterminado
@@ -105,6 +110,21 @@ useEffect(() => {
         /*En caso de no haya ningun contacto se muestra un texto vacio */
         ListEmptyComponent={<Text style={styles.empty}>— vacío —</Text>}
       />
+      {/**Botón de agregar */}
+      <NewContactModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onCreated={syncAndLoad}
+      />
+
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Ionicons name="add-circle" size={60} color="#6096B4" />
+      </TouchableOpacity>
+
+
     </View>
   )
 }
@@ -161,4 +181,10 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 2,
   },
+  addButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: 30,
+    zIndex: 999,
+  }
 })

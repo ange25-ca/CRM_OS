@@ -3,6 +3,12 @@ import * as DB from '../../data/persistence/contactsDb';
 import * as Service from '../../data/service/contactsService';
 import { Contact } from '../../domain/entities/Contact';
 import { usePermissionsStore } from '../../../settings/Permissions/infra/permissionsStore';
+import {
+  addExpoContact,
+  updateExpoContact,
+  deleteExpoContact,
+} from '../../data/service/contactsService';
+
 
 type ContactsState = {
   contacts: Contact[];
@@ -27,7 +33,11 @@ type ContactsState = {
   setRelation: (cid: string, relation: string) => void;
 
   /*Para eliminar */
-  deleteContact:(id: string) => Promise<void>;
+  deleteContact: (id: string) => Promise<void>;
+  /*Agregar el contacto */
+  addContact: (contact: Omit<Contact, 'id'>) => Promise<void>;
+
+
 };
 
 export const useContactsStore = create<ContactsState>((set, get) => ({
@@ -78,13 +88,6 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
     }
   },
 
-  updateContact: (id, { name, phone }) =>
-    set(s => ({
-      contacts: s.contacts.map(c =>
-        c.id === id ? { ...c, name, phone } : c
-      ),
-    })),
-
   /*Permite añadir las tags */
   addTag: (cid, tag) =>
     set(s => ({
@@ -122,16 +125,51 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
       },
     })),
 
-    deleteContact: async (id) => {
-  try {
-    await DB.deleteContact(id); // 👈 función que borra en SQLite
-    set((s) => ({
-      contacts: s.contacts.filter(c => c.id !== id),
-    }));
-  } catch (error) {
-    console.error('❌ Error al eliminar contacto:', error);
-    throw error;
-  }
-},
+  deleteContact: async (id) => {
+    try {
+      await deleteExpoContact(id);
+      await DB.deleteContact(id);
+      set((s) => ({
+        contacts: s.contacts.filter(c => c.id !== id),
+      }));
+    } catch (error) {
+      console.warn('Error al eliminar contacto:', error);
+      throw error;
+    }
+  },
 
+
+  /*Agrega contacto */
+  addContact: async (contactWithoutId) => {
+    try {
+      /*Se genera el ID atravez de expo */
+      const id = await addExpoContact(contactWithoutId); 
+      const newContact: Contact = { ...contactWithoutId, id };
+      /*Se intenta agregar en SQLite */
+      await DB.saveContact(newContact); 
+
+      set(state => ({
+        contacts: [...state.contacts, newContact],
+      }));
+    } catch (error) {
+      console.warn('Error al agregar contacto:', error);
+      throw error;
+    }
+  },
+
+  updateContact: async (id, { name, phone }) => {
+    try {
+      await updateExpoContact({ id, name, phone }); 
+      await DB.saveContact({ id, name, phone });    
+
+      set(s => ({
+        contacts: s.contacts.map(c =>
+          c.id === id ? { ...c, name, phone } : c
+        ),
+      }));
+    } catch (error) {
+      console.warn('Error al actualizar contacto:', error);
+      throw error;
+    }
+  },
 }));

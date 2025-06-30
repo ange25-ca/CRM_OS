@@ -1,9 +1,18 @@
 import * as SQLite from 'expo-sqlite';
 import { Contact } from '../../domain/entities/Contact';
 
-async function getDB() {
-  /*Se abre o crea la base de datos de los contactos */
-  return await SQLite.openDatabaseAsync('contacts.db');
+let dbInstance: SQLite.SQLiteDatabase | null = null;
+
+async function getDB(): Promise<SQLite.SQLiteDatabase> {
+  if (!dbInstance) {
+    try {
+      dbInstance = await SQLite.openDatabaseAsync('contacts.db');
+    } catch (error) {
+      console.warn('Error abriendo la base de datos:', error);
+      throw error;
+    }
+  }
+  return dbInstance;
 }
 
 /*Se inicializa la tabla de contactos (si no existe) */
