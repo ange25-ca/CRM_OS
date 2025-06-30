@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Linking } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useContactsStore } from '../../viewmodel/useContacsStore';
 import { ContactStackParamList } from '../../navigation/types/type';
 import { Ionicons } from '@expo/vector-icons';
 import TagList from '../organisms/TagList';
 import TextButtonAtom from '../atoms/IconButtonAtom';
+import { Contacto, Interaccion } from '../../../../relational/entities/contacto';
+import { sugerirAccion } from '../../../../relational/utils/sugerirAccion';
+import * as DB from '../../../../contacs/data/persistence/contactsDb';
+import ActionsGroup from '../organisms/ActionsGrups';
 
 /*Se declara el tipo de navegación */
 type Props = NativeStackScreenProps<ContactStackParamList, 'ContactDetailScreen'>;
@@ -31,6 +35,52 @@ export default function ContactDetailScreen({ route, navigation }: Props) {
     updateContact(contactId, { name, phone });
     Alert.alert('Guardado', 'Los cambios se han guardado.');
     navigation.goBack();
+  };
+  /*Se separa las tags */
+  const tags = tagsByContactId[contactId] ?? [];
+
+  const handleAction = async (tipo: Interaccion['tipo']) => {
+    try {
+      /*Dispara la acción de cada botón */
+      switch (tipo) {
+        case 'llamada':
+          if (contact.phone) await Linking.openURL(`tel:${contact.phone}`);
+          break;
+        case 'email':
+          if (contact.email) await Linking.openURL(`mailto:${contact.email}`);
+          break;
+        case 'mensaje':
+          if (contact.phone) await Linking.openURL(`sms:${contact.phone}`);
+          break;
+        case 'reunión':
+          if (Platform.OS === 'android') {
+            await Linking.openURL(`content://com.android.calendar/time/${Date.now()}`);
+          } else {
+            // iOS usa calshow: con segundos
+            await Linking.openURL(`calshow:${Date.now() / 1000}`);
+          }
+          break;
+      }
+
+      /*Llama la interacción de la bd */
+      await DB.saveInteraction(contactId, tipo, new Date());
+
+      /*Recarga las interacciones */
+      const inters = await DB.loadInteractions(contactId);
+      const ri: Contacto = {
+        id: contact.id,
+        nombre: contact.name,
+        importancia: tagsByContactId[contactId]?.length ?? 0,
+        interacciones: inters,
+      };
+      const nueva = sugerirAccion(ri);
+
+      /*Actualiza el store y vuelve a la pagina de contactos general */
+      setRelation(contactId, nueva);
+      navigation.goBack();
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo ejecutar la acción.');
+    }
   };
 
   return (
@@ -97,6 +147,8 @@ export default function ContactDetailScreen({ route, navigation }: Props) {
             onUpdateTag={(o, n) => updateTag(contactId, o, n)}
           />
         </View>
+        {/*Botón para las Acciones */}
+        <ActionsGroup onAction={handleAction} />
         {/* Botón Guardar */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>GUARDAR</Text>
@@ -192,5 +244,30 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 125,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 16,
+  },
+  actionBtn: {
+    backgroundColor: '#6096B4',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: 70
+  },
+  actionTxt: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center'
+  },
+  sugerencia: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginVertical: 12,
+    textAlign: 'center'
   },
 });

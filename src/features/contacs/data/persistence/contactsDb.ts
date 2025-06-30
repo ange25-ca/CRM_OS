@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { Contact } from '../../domain/entities/Contact';
+import { Interaccion } from '../../../relational/entities/contacto';
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
@@ -28,6 +29,15 @@ export async function initContactsDB(): Promise<void> {
        tags   TEXT
      );`
   );
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS interactions (
+      id         TEXT PRIMARY KEY NOT NULL,
+      contactId  TEXT NOT NULL,
+      fecha      INTEGER NOT NULL,  
+      tipo       TEXT NOT NULL,     
+      FOREIGN KEY(contactId) REFERENCES contacts(id)
+    );
+  `);
 }
 
 /*Se inserta o reemplaza el contacto */
@@ -84,4 +94,39 @@ export async function updateContact(
 export async function deleteContact(id: string): Promise<void> {
   const db = await getDB();
   await db.runAsync(`DELETE FROM contacts WHERE id = ?;`, id);
+}
+
+export async function saveInteraction(
+  contactId: string,
+  tipo: 'llamada' | 'email' | 'reunión' | 'mensaje',
+  fecha: Date
+): Promise<void> {
+  const db = await getDB();
+  const id = `${contactId}-${fecha.getTime()}`; // o UUID
+  await db.runAsync(
+    `INSERT INTO interactions (id, contactId, fecha, tipo)
+     VALUES (?, ?, ?, ?);`,
+    id,
+    contactId,
+    fecha.getTime(),
+    tipo
+  );
+}
+
+/* Carga todas las interacciones de un contacto, ordenadas cronológicamente */
+export async function loadInteractions(
+  contactId: string
+): Promise<Interaccion[]> {
+  const db = await getDB();
+  const rows = await db.getAllAsync<any>(
+    `SELECT fecha, tipo
+       FROM interactions
+      WHERE contactId = ?
+      ORDER BY fecha ASC;`,
+    contactId
+  );
+  return rows.map(r => ({
+    fecha: new Date(r.fecha),
+    tipo:  r.tipo as Interaccion['tipo'],
+  }));
 }

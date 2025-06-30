@@ -72,6 +72,7 @@ export default function ContactsScreen() {
         style={styles.list}
         contentContainerStyle={styles.listContent}
         data={contacts}
+        extraData={relationByContactId}
         keyExtractor={c => c.id}
         renderItem={({ item }) => {
           const relation = relationByContactId[item.id]

@@ -8,7 +8,8 @@ import {
   updateExpoContact,
   deleteExpoContact,
 } from '../../data/service/contactsService';
-
+import { sugerirAccion } from '../../../relational/utils/sugerirAccion'
+import type { Contacto, Interaccion } from '../../../relational/entities/contacto';
 
 type ContactsState = {
   contacts: Contact[];
@@ -47,10 +48,12 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
   granted: null,
   tagsByContactId: {},
 
+
   init: async () => {
     /*Se inicia la base de datos local */
     await DB.initContactsDB();
   },
+
 
   /*Gestiona la verificacion de los permisos */
   checkPermission: async () => {
@@ -77,9 +80,35 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
       await Promise.all(expoList.map(c => DB.saveContact(c)));
       /*Lee los coontactos desde SQLite */
       const saved = await DB.loadAllContacts();
-
       /*Actualiza */
       set({ contacts: saved });
+
+
+      const interactionsMap: Record<string, Interaccion[]> = {};
+      await Promise.all(
+        saved.map(async c => {
+          interactionsMap[c.id] = await DB.loadInteractions(c.id);
+        })
+      );
+
+      /*Se arman las reglas */
+      const relationMap: Record<string, string> = {};
+      saved.forEach(c => {
+        const ri: Contacto = {
+          id: c.id,
+          nombre: c.name,
+          importancia: c.tags?.length ?? 0,        
+          interacciones: interactionsMap[c.id] || []
+        };
+        relationMap[c.id] = sugerirAccion(ri);
+      });
+
+      /*Se actualiza el estado */
+      set({
+        contacts: saved,
+        relationByContactId: relationMap
+      });
+      
     } catch (err) {
       console.error('Error sincronizando contactos:', err);
       throw err;
@@ -143,10 +172,10 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
   addContact: async (contactWithoutId) => {
     try {
       /*Se genera el ID atravez de expo */
-      const id = await addExpoContact(contactWithoutId); 
+      const id = await addExpoContact(contactWithoutId);
       const newContact: Contact = { ...contactWithoutId, id };
       /*Se intenta agregar en SQLite */
-      await DB.saveContact(newContact); 
+      await DB.saveContact(newContact);
 
       set(state => ({
         contacts: [...state.contacts, newContact],
@@ -159,8 +188,8 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
 
   updateContact: async (id, { name, phone }) => {
     try {
-      await updateExpoContact({ id, name, phone }); 
-      await DB.saveContact({ id, name, phone });    
+      await updateExpoContact({ id, name, phone });
+      await DB.saveContact({ id, name, phone });
 
       set(s => ({
         contacts: s.contacts.map(c =>

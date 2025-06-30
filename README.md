@@ -70,12 +70,14 @@ crm_os/
 │   │   │   └── useContactsStore.ts
 │   │   ├── presentation/
 │   │   │   ├── componentes/
+│   │   │   │   ├── atoms/ActionButton.tsx
 │   │   │   │   ├── atoms/IconButtonAtom.tsx
 │   │   │   │   ├── atoms/TagAtom.tsx
 │   │   │   │   ├── molecules/addTagInput.tsx
 │   │   │   │   ├── organisms/ContactItem.tsx
 │   │   │   │   ├── organisms/NewContactModal.tsx
 │   │   │   │   └── organisms/TagList.tsx
+│   │   │   │   ├── organisms/ActionsGrups.tsx
 │   │   │   └── pages/
 │   │   │       ├── ContactDetailScreen.tsx
 │   │   │       └── ContactScreen.tsx
@@ -121,6 +123,16 @@ crm_os/
 │   │           │   ├── molecules/PermissionItem.tsx
 │   │           │   ├── organisms/PermissionsList.tsx
 │   │           │   └── pages/SettingsScreen.tsx
+│   ├── relation/
+│   │   ├── ingine/
+│   │   │   ├── index.ts
+│   │   │   └── service/calendarService.ts
+│   │   ├── entities/
+│   │   │   └── contacto.ts
+│   │   ├── rules/
+│   │   │   └── recencia.ts
+│   │   ├── utils/
+│   │   │   ├── sugerirAcciones.ts
 ├── navigation/
 │   ├── tabs/
 │   │   ├── TabsNavigator.tsx
@@ -146,3 +158,4 @@ crm_os/
 | **zustand**                                                                                                                 | Manejo de estado global simple y reactivo                      |
 | **react**, **react-native**                                                                                                 | Librerias fundamentales de UI                                  |
 | **typescript**, **@babel/core**, **@types/react**                                                                           | Tipado estatico, transpilacion y definiciones de tipo          |
+| **zod**                                                                                                                     | Definición y validación de esquemas, garantizando datos tipados y seguros en tiempo de ejecución y compilación |
